@@ -1,0 +1,9 @@
+services:
+  website:
+    build:
+      context: ./web/
+      args:
+        - NODE_ENV=production
+    environment:
+      - NODE_ENV=production
+    command: bash -c "npm run build && npm run start"
