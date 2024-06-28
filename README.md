@@ -1,103 +1,98 @@
 # ToolBox-Pro
 
-## Overview
-The AI Toolbox is a powerful and versatile application designed to revolutionize productivity and efficiency by leveraging the capabilities of artificial intelligence. This innovative platform integrates a suite of AI-driven tools capable of performing a wide range of tasks, from writing and summarizing content to executing complex operations that typically require a team of professionals. By harnessing the power of AI agents, the AI Toolbox transforms the way individuals and businesses approach their daily workflows, making it an indispensable asset for anyone looking to optimize their processes.
+Welcome to the AI Toolbox documentation. This application leverages artificial intelligence to perform a variety of tasks such as writing, summarizing, and more. Explore the limitless possibilities of AI with our innovative platform.
 
-## How to run on locally
+## Features
 
-> You need to ensure that you have **docker** and **docker-compose** installed on you development environment.
+- Light/dark mode toggle
+- More to be added
 
-- Make run.sh and stop.sh executable (only required for linux/mac users)
-```sh
-$ chmod +x run.sh
-$ chmod +x stop.sh
+## Run Locally
+
+Clone the project
+
+```bash
+git clone https://github.com/ArjunVarshney/ToolBox-Pro
 ```
 
-- Run the docker containers using
-```sh
-$ ./run.sh
+Go to the project directory
+
+```bash
+cd ToolBox-Pro
+```
+
+Make run.sh and stop.sh executable (only required for linux/mac users)
+```bash
+chmod +x run.sh
+chmod +x stop.sh
+```
+
+Run the docker containers
+```bash
+./run.sh
 ```
 After this the user-interface will be available at `localhost:3000`
 > **Note** - It will take some time on the first execution, after that it will be faster in the further executions 
 
-- To stop the docker containers
+To stop the docker containers
 ```sh
-$ ./stop.sh
+./stop.sh
 ```
 
-## Details of Different Containers
+## Usage/Devlopment
+
+- After running the containers the user interface will be available at `localhost:3000`
+- For development purposes or for intergrating the APIs into your own platform refer to [containers.md](containers.md) for the details of all the docker container and how to access them, for different API endpoints refer to [endpoints.md](endpoints.md)
+
+## Tech Stack
 
 ### Website
 
-- Available at `localhost:3000`.
+- **Frontend**
+   - React Typescript
+   - Next js
+   - Shadcn
+   - Tailwind
 
-- It has a bind mount with the `/web` directory which means, any changes made into that directory will be immediately reflected inside the container resulting in change in the structure and content of the website.
+- **Backend**
+   - Typescript
+   - Next js
+   - Prisma ORM
+   - Runtime: Nodejs
 
-- If you choose to install new dependencies to the `/web` directory which has a bind mount with the `website` container,  you have install all the dependencies in `package.json` file by using `npm i` first, and then install the new dependencies.
+- **Databases**
+   - MongoDB
+   - Minio for object storage
 
-- If you make changes to the package.json file (By install any package), you have to restart the containers for it to get updated inside the containers.
+### AI Services
 
-- For accessing logs during development you can use
-```sh
-docker logs -f website
-```
+- Python
+- Crew AI
+- Langchain
+- Tensorflow
+- Flask
 
-### Mongo
+### Container Management
 
-- It provides the NoSQL database during development of this website
+- Docker
+- Docker Compose
 
-- Exposed at `localhost:27017` (Even though it is not required) for debugging and accessing it using platforms like mongodb compass.
+## Design Files
 
-- Details for Connecting to the database:
-```yml
-Port: 27017
-Username: root
-Password: password
-Database_name: data
-IP_Address: Can be referenced using 'mongo'
-```
+- [Website Design](https://www.figma.com/design/1hm45NVNMcuKniUwSHISCV/Website-design?t=ndumJaSboTAXFyfU-1)
+- [Website Structure/Wireframe](https://www.figma.com/board/xvXAsd96d45asun7f8uck1/Website-structure?t=ndumJaSboTAXFyfU-1)
+- [System/Container Architecture](https://www.figma.com/board/uA8KmhESL016Et3Tunqyg2/Container-Architecture?t=ndumJaSboTAXFyfU-1)
 
-- To access the mongo shell (even though i you can access the user interface at `localhost:8081`)
-```sh
-$ docker exec -it mongo mongosh
-# blah blah info
+## Contributing
 
-# For authentication
-> use admin
-> db.auth("root", "password")
+We welcome contributions to ToolBox-Pro! Whether it's bug fixes, new features, or improvements to the documentation, your help is greatly appreciated. To contribute, follow these steps:
 
-# access the db as needed by you
-> show dbs #....etc
-```
+- Fork the Pdfz repository.
+- Create a new branch for your changes: `git checkout -b feature/your-feature`.
+- Make your changes and commit them: `git commit -m 'Add your feature'`.
+- Push your changes to your fork: `git push origin feature/your-feature`.
+- Create a pull request against the main Pdfz repository.
 
-> **Note**: After this container runs, it will create a folder inside ./data folder for persistent data
+## Authors
 
-### Mongo_panel
-
-- It is a container which provides a user-interface for managing the mongo database
-
-- Exposed at `localhost:8081` (like compass)
-
-- Sign in Credentials:
-```yml
-Username: root
-Password: password
-```
-
-### Minio
-
-- It is the object database used in this application for development purposes.
-
-- User-interface exposed at `localhost:9001` for managing the buckets and the objects.
-
-- For API requests it is exposed at `localhost:9000` (even though it is not required)
-
-- Sign in credentials:
-```yml
-Username: root
-Password: password
-```
-
-- For referencing the host address you can use `minio` keyword.
-
-> **Note**: After this container runs, it will create a folder inside ./data folder for persistent data
+- [@ArjunVarshney](https://github.com/ArjunVarshney)
