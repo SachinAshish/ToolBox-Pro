@@ -4,6 +4,8 @@ services:
       context: ./web/
       args:
         - NODE_ENV=development
+    ports:
+      - "3000:3000"
     container_name: website
     depends_on:
       - mongo
@@ -24,6 +26,16 @@ services:
       - S3_ENDPOINT=minio
       - S3_PORT=9000
     command: "npm run dev"
+
+  load_balancer:
+    image: nginx:latest
+    container_name: load_balancer
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - website
+    ports:
+      - "5000:80"
   
   mongo:
     image: mongo

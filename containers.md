@@ -3,6 +3,7 @@
 This file provides information about all the docker container present inside this project. This project contains the following containers:
 
 -  [Website](#website): For providing the web ui.
+-  [Load_Balancer](#load_balancer): For load balancing the app when it scales to multiple containers.
 -  [Mongo](#mongo): To Provide Mongo database for development.
 -  [Mongo_panel](#mongo_panel): To provide a web ui for managing mongodb.
 -  [Minio](#minio): To provide object storage.
@@ -24,6 +25,16 @@ The details of all the containers and how to access them are given below:
 ```sh
 docker logs -f website
 ```
+
+### Load_balancer
+
+-  This container is a nginx server which load balances multiple website containers.
+
+-  For seeing it in action you can go to `localhost:5000`.
+
+-  For development purposes, you have to use `localhost:3000` as nginx does not provid hot reload once connected to the app, so you have to reload the app every time you make changes to it.
+
+-  This was added just for fun though... It may be usefull in the production
 
 ### Mongo
 
