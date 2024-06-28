@@ -21,22 +21,18 @@ Go to the project directory
 cd ToolBox-Pro
 ```
 
-Make run.sh and stop.sh executable (only required for linux/mac users)
+Run the docker containers using
+
 ```bash
-chmod +x run.sh
-chmod +x stop.sh
+sudo make start
 ```
 
-Run the docker containers
-```bash
-./run.sh
-```
 After this the user-interface will be available at `localhost:3000`
 > **Note** - It will take some time on the first execution, after that it will be faster in the further executions 
 
 To stop the docker containers
 ```sh
-./stop.sh
+sudo make stop
 ```
 
 ## Usage/Devlopment
