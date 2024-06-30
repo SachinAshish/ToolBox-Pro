@@ -1,4 +1,5 @@
 services:
+# ---------------------------------------website-------------------------------------------
   website:
     build:
       context: ./web/
@@ -27,6 +28,7 @@ services:
       - S3_PORT=9000
     command: "npm run dev"
 
+# ------------------------------------load_balancer-----------------------------------------
   load_balancer:
     image: nginx:latest
     container_name: load_balancer
@@ -36,7 +38,8 @@ services:
       - website
     ports:
       - "5000:80"
-  
+
+# ----------------------------------database and related to it------------------------------------
   mongo:
     image: mongo
     container_name: mongo
@@ -74,3 +77,17 @@ services:
     command: server /data --console-address ":9001"
     volumes:
       - ./data/minio:/data
+
+# -----------------------------------pdf operations api--------------------------------------------------
+  pdf-api:
+    image: frooodle/s-pdf:latest
+    container_name: pdf-api
+    ports:
+      - '8000:8080'
+    environment:
+      - DOCKER_ENABLE_SECURITY=false
+      - INSTALL_BOOK_AND_ADVANCED_HTML_OPS=false
+      - LANGS=en_GB
+      - UI_APPNAME=PDFs
+      - UI_HOMEDESCRIPTION=A versatile PDF app that provides a suite of services for manipulating PDFs, including converting, merging, splitting, rotating, and securing documents, ensuring seamless document management
+      - UI_APPNAMENAVBAR=PDFs

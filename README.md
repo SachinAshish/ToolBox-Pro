@@ -52,7 +52,7 @@ sudo make stop
 
 - **Backend**
    - Typescript
-   - Next js
+   - Next js API directory
    - Prisma ORM
    - Runtime: Nodejs
 
@@ -83,11 +83,11 @@ sudo make stop
 
 We welcome contributions to ToolBox-Pro! Whether it's bug fixes, new features, or improvements to the documentation, your help is greatly appreciated. To contribute, follow these steps:
 
-- Fork the Pdfz repository.
+- Fork the ToolBox-Pro repository.
 - Create a new branch for your changes: `git checkout -b feature/your-feature`.
 - Make your changes and commit them: `git commit -m 'Add your feature'`.
 - Push your changes to your fork: `git push origin feature/your-feature`.
-- Create a pull request against the main Pdfz repository.
+- Create a pull request against the main ToolBox-Pro repository.
 
 ## Authors
 
