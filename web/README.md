@@ -5,7 +5,7 @@ Welcome to ToolBox-Pro website, this application leverages artificial intelligen
 ## Features
 
 -  light/dark mode
--  More to be added
+-  A suite of PDF operations
 
 ## Run Locally
 

@@ -2,16 +2,16 @@
 
 ## List of all port open for different containers
 
+-  `localhost:80` - NginX on top of Next js server (load_balancer)
 -  `localhost:3000` - Next js server (website)
--  `localhost:5000` - NginX on top of Next js server (load_balancer)
+-  `localhost:4000` - Pdf Manipulation API (pdf-api)
 -  `localhost:27017` - MongoDB (mongo)
 -  `locahost:8081` - Mongo-Panel for managing MongoDB (mongo_panel)
 -  `localhost:9000` - Minio S3 (minio)
--  `localhost:8000` - Pdf Manipulation API (pdf-api)
 
 ## Contents
 
-- [Pdf-API](#pdf-api)
+-  [Pdf-API](#pdf-api)
 
 ## Pdf-API
 

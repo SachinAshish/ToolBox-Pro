@@ -31,7 +31,7 @@ docker logs -f website
 
 -  This container is a nginx server which load balances multiple website containers.
 
--  For seeing it in action you can go to `localhost:5000`.
+-  For seeing it in action you can go to `localhost:80`.
 
 -  For development purposes, you have to use `localhost:3000` as nginx does not provid hot reload once connected to the app, so you have to reload the app every time you make changes to it.
 
@@ -109,7 +109,7 @@ Password: password
 
 -  The docs can be found at [swaggerhub](https://app.swaggerhub.com/apis-docs/Frooodle/Stirling-PDF/0.26.1#/).
 
--  User interface exposed at `localhost:8000` for accessing all the tools.
+-  User interface exposed at `localhost:4000` for accessing all the tools.
 
 -  For accessing this api, you can use `pdf-api:8080/` inside the website container or another container.
    -  `pdf-api`: For the host address of the container.

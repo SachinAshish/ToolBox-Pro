@@ -37,7 +37,7 @@ services:
     depends_on:
       - website
     ports:
-      - "5000:80"
+      - "80:80"
 
 # ----------------------------------database and related to it------------------------------------
   mongo:
@@ -83,7 +83,7 @@ services:
     image: frooodle/s-pdf:latest
     container_name: pdf-api
     ports:
-      - '8000:8080'
+      - '4000:8080'
     environment:
       - DOCKER_ENABLE_SECURITY=false
       - INSTALL_BOOK_AND_ADVANCED_HTML_OPS=false
