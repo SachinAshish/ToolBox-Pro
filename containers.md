@@ -6,7 +6,7 @@ This file provides information about all the docker container present inside thi
 -  [Load_Balancer](#load_balancer): For load balancing the app when it scales to multiple containers.
 -  [Mongo](#mongo): To Provide Mongo database for development.
 -  [Mongo_panel](#mongo_panel): To provide a web ui for managing mongodb.
--  [Minio](#minio): To provide object storage.
+-  [Localstack S3](#localstack-s3): To provide object storage.
 -  [Pdf-API](#pdf-api): To provide an API for pdf manipulation
 
 The details of all the containers and how to access them are given below:
@@ -82,22 +82,25 @@ Username: root
 Password: password
 ```
 
-### Minio
+### Localstack s3
 
 -  It is the object database used in this application for development purposes (AWS S3 or S3 from anyother vendor may be used in production).
 
--  User-interface exposed at `localhost:9001` for managing the buckets and the objects.
+-  User-interface can be accessed using the resource browser provided by localstack at `https://app.localstack.cloud/inst/default/resources/s3` for managing the buckets and the objects.
 
--  For API requests it is exposed at `localhost:9000` (even though it is not required)
+-  For API requests it is exposed at `localhost:4566` (even though it is not required)
 
 -  Sign in credentials:
 
 ```yml
-Username: root
-Password: password
+endpoint: "http://s3:4566"
+forcePathStyle: true
+accessKeyId: "test" # Dummy for development purposes
+secretAccessKey: "test" # Dummy for development purposes
+region: "us-east-1" # Dummy for development purposes
 ```
 
--  For referencing the host address you can use `minio` keyword.
+-  For referencing the host address you can use `s3` keyword.
 
 > **Note**: After this container runs, it will create a folder inside ./data folder for persistent data
 

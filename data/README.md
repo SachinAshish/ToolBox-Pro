@@ -3,7 +3,7 @@
 This folder will contain:
 
 -  **mongo** - This will act as a persistent source of data for mongodb
--  **minio** - This will act as a persistent source of data for minio
+-  **aws** - This will act as a persistent source of data for aws
 
 Ideally, you would not want to touch this directory as it contains auto generated data from the write requests you make.
 

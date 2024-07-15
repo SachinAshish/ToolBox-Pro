@@ -7,7 +7,7 @@
 -  `localhost:4000` - Pdf Manipulation API (pdf-api)
 -  `localhost:27017` - MongoDB (mongo)
 -  `locahost:8081` - Mongo-Panel for managing MongoDB (mongo_panel)
--  `localhost:9000` - Minio S3 (minio)
+-  `localhost:4566` - Localstack S3 (s3)
 
 ## Contents
 

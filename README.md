@@ -63,7 +63,7 @@ sudo make stop
 
 -  **Databases**
    -  MongoDB
-   -  Minio for object storage
+   -  AWS S3 for object storage
 
 ### AI Services
 
