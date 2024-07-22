@@ -6,6 +6,7 @@ Welcome to the AI Toolbox documentation. This application leverages artificial i
 
 -  Light/dark mode toggle
 -  A suite of PDF operations
+-  Authentication with email verification and reset password functionality
 -  Exposed API for integrating with external scripts.
 
 ## Run Locally
@@ -38,10 +39,16 @@ To stop the docker containers
 sudo make stop
 ```
 
+> **Note** - The services will keep on running in the background if not stopped.
+
 ## Usage/Devlopment
 
 -  After running the containers the user interface will be available at `localhost:3000`
--  For development purposes or for intergrating the APIs into your own platform refer to [containers.md](containers.md) for the details of all the docker container and how to access them, for different API endpoints refer to [endpoints.md](endpoints.md)
+
+-  For development purposes
+   -  For intergrating the APIs into your own platform refer to [containers.md](containers.md)
+   -  For the details of all the docker container and how to access them, for different API endpoints refer to [endpoints.md](endpoints.md)
+   -  For details about the folder structure refer to [folder-structure.md](folder-structure.md)
 
 ## Tech Stack
 

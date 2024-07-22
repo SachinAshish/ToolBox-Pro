@@ -13,11 +13,9 @@ The details of all the containers and how to access them are given below:
 
 ### Website
 
--  Available at `localhost:3000`. (This port will not be available in the production variant, so that it can only be accessed via a load balancer from the outside world)
+-  Available at `localhost:3000`.
 
 -  It has a bind mount with the `/web` directory which means, any changes made into that directory will be immediately reflected inside the container resulting in change in the structure and content of the website.
-
--  If you choose to install new dependencies to the `/web` directory which has a bind mount with the `website` container, you have install all the dependencies in `package.json` file by using `npm i` first, and then install the new dependencies.
 
 -  If you make changes to the package.json file (By install any package), you have to restart the containers for it to get updated inside the containers.
 
@@ -26,6 +24,14 @@ The details of all the containers and how to access them are given below:
 ```sh
 docker logs -f website
 ```
+
+-  For accessing the shell of the container on which the app is running use
+
+```sh
+docker exec -it website bash
+```
+
+-  For accessing the realtime state of the database, you can go to `localhost:5555` for accessing the prisma studio.
 
 ### Load_balancer
 
@@ -37,16 +43,16 @@ docker logs -f website
 
 -  This was added just for fun though... It may be usefull in the production
 
-### Mongo
+### Mongo (replica set of 3 nodes)
 
 -  It provides the NoSQL database during development of this website (in production an external database provider may be used)
 
--  Exposed at `localhost:27017` (Even though it is not required) for debugging and accessing it using platforms like mongodb compass.
+-  Primary node exposed at `localhost:27017` (Even though it is not required) for debugging and accessing it using platforms like mongodb compass.
 
 -  Details for Connecting to the database during development:
 
 ```yml
-Port: 27017
+Port: 27017, 27018, 27019
 Username: root
 Password: password
 Database_name: data
@@ -56,15 +62,7 @@ IP_Address: Can be referenced using 'mongo'
 -  To access the mongo shell (even though you can access the user interface at `localhost:8081`)
 
 ```sh
-$ docker exec -it mongo mongosh
-# blah blah info
-
-# For authentication
-> use admin
-> db.auth("root", "password")
-
-# access the db as needed by you
-> show dbs #....etc
+$ docker exec -it mongo mongosh --username root --password password --host mongo1
 ```
 
 > **Note**: After this container runs, it will create a folder inside ./data folder for persistent data
@@ -73,7 +71,7 @@ $ docker exec -it mongo mongosh
 
 -  It is a container which provides a user-interface for managing the mongo database during development
 
--  Exposed at `localhost:8081` (like compass)
+-  Exposed at `localhost:8081` (for compass like User interface)
 
 -  Sign in Credentials:
 

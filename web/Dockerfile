@@ -21,4 +21,4 @@ COPY . .
 EXPOSE 3000
 
 # run npm run dev for development server
-CMD [ "npm", "run", "dev" ]
+CMD ["npm", "run", "dev"]

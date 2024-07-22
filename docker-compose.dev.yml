@@ -7,26 +7,18 @@ services:
         - NODE_ENV=development
     ports:
       - "3000:3000"
+      - "5555:5555"
     container_name: website
     depends_on:
-      - mongo
+      - mongo1
+      - mongo2
+      - mongo3
       - s3
     volumes:
       - ./web/:/app
-      - /app/node_modules
     environment:
       - NODE_ENV=development
-      - MONGO_USER=root
-      - MONGO_PASSWORD=password
-      - MONGO_IP=mongo
-      - MONGO_PORT=27017
-      - MONGO_DATABASE=data
-      - DATABASE_URL=mongodb://root:password@mongo:27017/data
-      - S3_ACCESS_KEY=FBj3TxXH9r738ODL6KJK
-      - S3_SECRET_KEY=Q3eNvQyVWgh0nbe6mD47FPTkeYdNE3FH9LifKkbo
-      - S3_ENDPOINT=minio
-      - S3_PORT=9000
-    command: "npm run dev"
+    command: bash -c "rm -rf .next && npm run dev"
 
 # ------------------------------------load_balancer-----------------------------------------
   load_balancer:
@@ -40,30 +32,49 @@ services:
       - "80:80"
 
 # ----------------------------------database and related to it------------------------------------
-  mongo:
-    image: mongo
-    container_name: mongo
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
-    volumes:
-      - ./data/mongo:/data/db
-    ports:
-      - "27017:27017"
 
-  mongo_panel:
+  mongo1:
+    image: mongo:6
+    container_name: mongo1
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data/mongo/mongo1_data:/data/db
+    command: mongod --replSet rs --bind_ip localhost,mongo1
+
+  mongo2:
+    image: mongo:6
+    container_name: mongo2
+    ports:
+      - 27018:27017
+    volumes:
+      - ./data/mongo/mongo2_data:/data/db
+    command: mongod --replSet rs --bind_ip localhost,mongo2
+  
+  mongo3:
+    image: mongo:6
+    container_name: mongo3
+    ports:
+      - 27019:27017
+    volumes:
+      - ./data/mongo/mongo3_data:/data/db
+    command: mongod --replSet rs --bind_ip localhost,mongo3
+
+  mongo-express:
     image: mongo-express
     container_name: mongo_panel
-    environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
-      - ME_CONFIG_MONGODB_URL=mongodb://root:password@mongo:27017/
-      - ME_CONFIG_BASICAUTH=false
-      - ME_CONFIG_OPTIONS_EDITORTHEME=material-darker
+    restart: always
     depends_on:
-      - mongo
+      - mongo1
+      - mongo2
+      - mongo3
     ports:
-      - "8081:8081"
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_URL: mongodb://root:password@mongo1:27017/
+      ME_CONFIG_BASICAUTH: false
 
   s3:
     build: ./aws/

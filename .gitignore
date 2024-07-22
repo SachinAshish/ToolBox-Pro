@@ -15,6 +15,7 @@ build
 # misc
 .DS_Store
 *.pem
+.env.local
 
 # debug
 npm-debug.log*
@@ -29,4 +30,4 @@ yarn-error.log*
 next-env.d.ts
 
 # local data reserves
-data/*/*
+data/*/*/*
