@@ -1,41 +1,34 @@
-"use client";
+'use client';
 
-import React, { useState, useTransition } from "react";
-import CardWrapper from "./card-wrapper";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { NewPasswordSchema } from "@/schemas";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-   Form,
-   FormControl,
-   FormField,
-   FormItem,
-   FormLabel,
-   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import FormError from "../form-error";
-import FormSuccess from "../form-success";
-import { useSearchParams } from "next/navigation";
-import { newPassword } from "@/actions/new-password";
+import React, { useState, useTransition } from 'react';
+import CardWrapper from './card-wrapper';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { NewPasswordSchema } from '@/schemas';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
+import FormError from './form-error';
+import FormSuccess from './form-success';
+import { useSearchParams } from 'next/navigation';
+import { newPassword } from '@/actions/auth/new-password';
 
 type Props = {};
 
 export default function NewPasswordForm({}: Props) {
    const searchParams = useSearchParams();
-   const token = searchParams.get("token");
+   const token = searchParams.get('token');
 
-   const [error, setError] = useState<string | undefined>("");
-   const [success, setSuccess] = useState<string | undefined>("");
+   const [error, setError] = useState<string | undefined>('');
+   const [success, setSuccess] = useState<string | undefined>('');
 
    const [isPending, startTransition] = useTransition();
 
    const form = useForm<z.infer<typeof NewPasswordSchema>>({
       resolver: zodResolver(NewPasswordSchema),
       defaultValues: {
-         password: "",
+         password: '',
       },
    });
 
@@ -57,7 +50,7 @@ export default function NewPasswordForm({}: Props) {
          <Form {...form}>
             <form
                onSubmit={form.handleSubmit(onSubmit)}
-               className="space-y-4 flex flex-col justify-start"
+               className="flex flex-col justify-start space-y-4"
             >
                <FormField
                   control={form.control}

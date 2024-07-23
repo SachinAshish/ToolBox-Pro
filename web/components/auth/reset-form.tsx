@@ -1,37 +1,30 @@
-"use client";
+'use client';
 
-import React, { useState, useTransition } from "react";
-import CardWrapper from "./card-wrapper";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { ResetPasswordSchema } from "@/schemas";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-   Form,
-   FormControl,
-   FormField,
-   FormItem,
-   FormLabel,
-   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import FormError from "../form-error";
-import FormSuccess from "../form-success";
-import { reset } from "@/actions/reset";
+import React, { useState, useTransition } from 'react';
+import CardWrapper from './card-wrapper';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { ResetPasswordSchema } from '@/schemas';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
+import FormError from './form-error';
+import FormSuccess from './form-success';
+import { reset } from '@/actions/auth/reset';
 
 type Props = {};
 
 export default function ResetForm({}: Props) {
-   const [error, setError] = useState<string | undefined>("");
-   const [success, setSuccess] = useState<string | undefined>("");
+   const [error, setError] = useState<string | undefined>('');
+   const [success, setSuccess] = useState<string | undefined>('');
 
    const [isPending, startTransition] = useTransition();
 
    const form = useForm<z.infer<typeof ResetPasswordSchema>>({
       resolver: zodResolver(ResetPasswordSchema),
       defaultValues: {
-         email: "",
+         email: '',
       },
    });
 
@@ -53,7 +46,7 @@ export default function ResetForm({}: Props) {
          <Form {...form}>
             <form
                onSubmit={form.handleSubmit(onSubmit)}
-               className="space-y-4 flex flex-col justify-start"
+               className="flex flex-col justify-start space-y-4"
             >
                <FormField
                   control={form.control}

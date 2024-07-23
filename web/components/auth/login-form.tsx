@@ -9,9 +9,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import FormError from '../form-error';
-import FormSuccess from '../form-success';
-import { login } from '@/actions/login';
+import FormError from './form-error';
+import FormSuccess from './form-success';
+import { login } from '@/actions/auth/login';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 

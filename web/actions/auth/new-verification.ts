@@ -1,19 +1,19 @@
-"use server";
+'use server';
 
-import { getUserByEmail } from "@/data/user";
-import { getVerificationTokenByToken } from "@/data/verification-token";
-import db from "@/lib/db";
+import { getUserByEmail } from '@/data/auth/user';
+import { getVerificationTokenByToken } from '@/data/auth/verification-token';
+import db from '@/lib/db';
 
 export const newVerification = async (token: string) => {
    const existingToken = await getVerificationTokenByToken(token);
-   if (!existingToken) return { error: "Token does not exists" };
+   if (!existingToken) return { error: 'Token does not exists' };
 
    const hasExpired = new Date(existingToken.expires) < new Date();
-   if (hasExpired) return { error: "Token has expired" };
+   if (hasExpired) return { error: 'Token has expired' };
 
    const existingUser = await getUserByEmail(existingToken.email);
 
-   if (!existingUser) return { error: "User does not exists!" };
+   if (!existingUser) return { error: 'User does not exists!' };
 
    try {
       console.log(existingToken.id);
@@ -26,7 +26,7 @@ export const newVerification = async (token: string) => {
       });
    } catch (error) {
       console.log(error);
-      return { error: "Something went wrong! Retry some time later." };
+      return { error: 'Something went wrong! Retry some time later.' };
    }
 
    try {
@@ -37,5 +37,5 @@ export const newVerification = async (token: string) => {
       // nothing we can do
    }
 
-   return { success: "Email verified" };
+   return { success: 'Email verified' };
 };

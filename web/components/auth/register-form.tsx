@@ -1,38 +1,31 @@
-"use client";
+'use client';
 
-import React, { useState, useTransition } from "react";
-import CardWrapper from "./card-wrapper";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { RegisterSchema } from "@/schemas";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-   Form,
-   FormControl,
-   FormField,
-   FormItem,
-   FormLabel,
-   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import FormError from "../form-error";
-import FormSuccess from "../form-success";
-import { register } from "@/actions/register";
+import React, { useState, useTransition } from 'react';
+import CardWrapper from './card-wrapper';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { RegisterSchema } from '@/schemas';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
+import FormError from './form-error';
+import FormSuccess from './form-success';
+import { register } from '@/actions/auth/register';
 
 type Props = {};
 
 export default function RegisterForm({}: Props) {
-   const [error, setError] = useState<string | undefined>("");
-   const [success, setSuccess] = useState<string | undefined>("");
+   const [error, setError] = useState<string | undefined>('');
+   const [success, setSuccess] = useState<string | undefined>('');
    const [isPending, startTransition] = useTransition();
 
    const form = useForm<z.infer<typeof RegisterSchema>>({
       resolver: zodResolver(RegisterSchema),
       defaultValues: {
-         name: "",
-         email: "",
-         password: "",
+         name: '',
+         email: '',
+         password: '',
       },
    });
 
@@ -55,7 +48,7 @@ export default function RegisterForm({}: Props) {
          <Form {...form}>
             <form
                onSubmit={form.handleSubmit(onSubmit)}
-               className="space-y-4 flex flex-col justify-start"
+               className="flex flex-col justify-start space-y-4"
             >
                <FormField
                   control={form.control}
@@ -64,11 +57,7 @@ export default function RegisterForm({}: Props) {
                      <FormItem className="text-left">
                         <FormLabel>Name</FormLabel>
                         <FormControl>
-                           <Input
-                              disabled={isPending}
-                              placeholder="johndoe"
-                              {...field}
-                           />
+                           <Input disabled={isPending} placeholder="johndoe" {...field} />
                         </FormControl>
                         <FormMessage />
                      </FormItem>
