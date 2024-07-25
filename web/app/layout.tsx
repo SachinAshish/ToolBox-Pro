@@ -1,11 +1,16 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
 import { auth } from '@/auth';
 import Navbar from '@/components/navbar';
 
-const inter = Inter({ subsets: ['latin'] });
+const font = Poppins({
+   subsets: ['latin'],
+   display: 'swap',
+   variable: '--font-poppins',
+   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+});
 
 export const metadata: Metadata = {
    title: 'ToolBox-Pro',
@@ -21,7 +26,7 @@ export default async function RootLayout({
    return (
       <SessionProvider session={session}>
          <html lang="en">
-            <body className={inter.className}>
+            <body className={font.className}>
                <Navbar />
                {children}
             </body>

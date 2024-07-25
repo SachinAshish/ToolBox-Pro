@@ -4,13 +4,13 @@ import React, { useState, useTransition } from 'react';
 import CardWrapper from './card-wrapper';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { ResetPasswordSchema } from '@/schemas';
+import { ResetPasswordSchema } from '@/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import FormError from './form-error';
-import FormSuccess from './form-success';
+import FormError from '../form-error';
+import FormSuccess from '../form-success';
 import { reset } from '@/actions/auth/reset';
 
 type Props = {};

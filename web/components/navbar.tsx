@@ -9,11 +9,11 @@ type Props = {};
 const Navbar = async (props: Props) => {
    const user = await currentUser();
    return (
-      <div className="flex h-[100px] w-full items-center bg-gray-50 px-8">
+      <div className="flex h-[100px] w-full items-center bg-gray-100 px-8">
          <div className="flex w-full items-center justify-between">
             <span>
                <Link href="/" className="hover:underline">
-                  <Button variant={"link"}>Home</Button>
+                  <Button variant={'link'}>Home</Button>
                </Link>
             </span>
             {user && (

@@ -13,7 +13,7 @@ services:
       - mongo1
       - mongo2
       - mongo3
-      - s3
+      - object_store
     volumes:
       - ./web/:/app
     environment:
@@ -76,14 +76,16 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:password@mongo1:27017/
       ME_CONFIG_BASICAUTH: false
 
-  s3:
+  object_store:
     build: ./aws/
-    container_name: s3
+    container_name: object_store
     environment:
       - AWS_DEFAULT_REGION=us-east-1
       - SERVICES=s3
+      - PERSISTENCE=1
     ports:
-      - '4566:4566'
+      - "127.0.0.1:4566:4566"
+      - "127.0.0.1:4510-4559:4510-4559"
     volumes:
       - ./data/aws:/var/lib/localstack
       - "/var/run/docker.sock:/var/run/docker.sock"
