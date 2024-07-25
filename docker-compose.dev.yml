@@ -82,12 +82,13 @@ services:
     environment:
       - AWS_DEFAULT_REGION=us-east-1
       - SERVICES=s3
-      - PERSISTENCE=1
+      - PERSIST_DEFAULT=0
+      - PERSIST_S3=1
     ports:
       - "127.0.0.1:4566:4566"
       - "127.0.0.1:4510-4559:4510-4559"
     volumes:
-      - ./data/aws:/var/lib/localstack
+      - ./data/aws:/persisted-data
       - "/var/run/docker.sock:/var/run/docker.sock"
 
 # -----------------------------------pdf operations api--------------------------------------------------
