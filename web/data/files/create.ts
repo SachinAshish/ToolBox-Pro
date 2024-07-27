@@ -7,6 +7,7 @@ import axios from 'axios';
 import { listFilesNoAuth, listFoldersNoAuth } from './list';
 import { verifyCurrentUser } from '@/lib/auth/verify';
 import { User } from '@prisma/client';
+import mime from 'mime-types';
 
 export const createFolder = async (path: string) => {
    let user: User;
@@ -18,13 +19,10 @@ export const createFolder = async (path: string) => {
          error: 'Something unexpected happened! Please report it <a href="https://github.com/ArjunVarshney/ToolBox-Pro/issues">here</a>',
       };
 
-   const initial_path = user.id + '/' + 'drive/';
+   const initial_path = user.id + '/drive';
 
    const folders = await listFoldersNoAuth(initial_path + path);
-   const existingFolder = folders?.filter(
-      (folder) => folder.substring(initial_path.length) === path,
-   )[0];
-   if (existingFolder) return { error: 'A folder with this name already exists!' };
+   if (folders?.length) return { error: 'A folder with this name already exists!' };
 
    const command = new PutObjectCommand({
       Bucket: 'data',
@@ -46,7 +44,7 @@ export const createFolder = async (path: string) => {
    }
 };
 
-export const uploadFile = async (formData: FormData) => {
+export const uploadFile = async (formData: FormData, path: string) => {
    let user: User;
    const verification = await verifyCurrentUser();
    if (!verification.success) return { error: verification.error };
@@ -56,13 +54,16 @@ export const uploadFile = async (formData: FormData) => {
          error: 'Something unexpected happened! Please report it <a href="https://github.com/ArjunVarshney/ToolBox-Pro/issues">here</a>',
       };
 
-   const initial_path = user.id + '/' + 'drive/';
+   const initial_path = user.id + '/drive' + path + '/';
 
    const file = formData.get('file') as File;
+   if (!mime.lookup(file.name)) return { error: 'File type not recognized!' };
 
-   const files = await listFilesNoAuth(initial_path);
-   const existingFile = files?.filter((f) => f.endsWith(file.name))[0];
-   if (existingFile) return { error: 'A file with this name already exists!' };
+   const binaryFile = await file.arrayBuffer();
+   const fileBuffer = Buffer.from(binaryFile);
+
+   const files = await listFilesNoAuth(initial_path + file.name);
+   if (files) return { error: 'A file with this name already exists!' };
 
    const command = new PutObjectCommand({
       Bucket: 'data',
@@ -71,8 +72,9 @@ export const uploadFile = async (formData: FormData) => {
    });
    try {
       const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
-      const result = await axios.put(url, formData, {
-         headers: { 'Content-Type': file.type },
+      const result = await axios.put(url, fileBuffer, {
+         headers: { 'Content-Type': 'multipart/form-data' },
+         responseType: 'arraybuffer',
       });
       if (result.status === 200) return { success: `${file.name} has been uploaded.` };
       return { error: 'The file could not be uploaded.' };

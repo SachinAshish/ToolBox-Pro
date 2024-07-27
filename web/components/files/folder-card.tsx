@@ -6,6 +6,7 @@ import {
    DropdownMenuContent,
    DropdownMenuItem,
    DropdownMenuTrigger,
+   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
    AlertDialog,
@@ -18,16 +19,44 @@ import {
    AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-import { MoreVertical, Trash } from 'lucide-react';
+import { FaFolder } from 'react-icons/fa';
+import {
+   MoreVertical,
+   Trash,
+   FileX,
+   Copy,
+   FolderInput,
+   FilePen,
+   FolderArchive,
+   FolderOpen,
+} from 'lucide-react';
 import { useState } from 'react';
 import { deleteFolder } from '@/data/files/delete';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useToast } from '../ui/use-toast';
+import { contentType } from '@/types';
+import { Button } from '../ui/button';
 
-const FolderCardAction = ({ onFolderDelete }: { onFolderDelete: any }) => {
+const FolderCardAction = ({ path }: { path: string }) => {
    const { toast } = useToast();
    const router = useRouter();
    const [open, setOpen] = useState(false);
+
+   const onDelete = async () => {
+      const result = await deleteFolder(path);
+      toast({
+         title: 'Deleting a Folder',
+      });
+      if (result?.success) {
+         toast({
+            title: result.success,
+            description: '1 folder was permanently deleted from Your Files.',
+         });
+         router.refresh();
+      }
+      setOpen(false);
+   };
+
    return (
       <>
          <AlertDialog open={open}>
@@ -41,32 +70,46 @@ const FolderCardAction = ({ onFolderDelete }: { onFolderDelete: any }) => {
                </AlertDialogHeader>
                <AlertDialogFooter>
                   <AlertDialogCancel onClick={() => setOpen(false)}>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                     onClick={async () => {
-                        const result = await onFolderDelete();
-                        if (result.success) {
-                           toast({
-                              title: result.success,
-                              description: '1 folder was permanently deleted from Your Files.',
-                           });
-                           router.refresh();
-                        }
-                        setOpen(false);
-                     }}
-                  >
-                     Continue
-                  </AlertDialogAction>
+                  <AlertDialogAction onClick={onDelete}>Continue</AlertDialogAction>
                </AlertDialogFooter>
             </AlertDialogContent>
          </AlertDialog>
          <DropdownMenu>
             <DropdownMenuTrigger className="-mr-2 focus:outline-none">
-               <MoreVertical className="h-5 w-5 cursor-pointer rounded-full text-muted-foreground transition-all hover:bg-gray-200 hover:text-primary active:text-muted-foreground" />
+               <MoreVertical className="h-5 w-5 cursor-pointer rounded-full text-muted-foreground transition-all hover:bg-gray-200 hover:text-primary active:text-muted-foreground dark:hover:bg-gray-700" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-               <DropdownMenuItem className="text-destructive" onClick={() => setOpen(true)}>
-                  <Trash className="mr-2 h-4 w-4" />
+            <DropdownMenuContent className="w-40" align="start">
+               <DropdownMenuItem onClick={() => {}}>
+                  <FolderOpen className="mr-2 h-4 w-4" />
+                  Open
+               </DropdownMenuItem>
+               <DropdownMenuItem onClick={() => {}}>
+                  <FolderArchive className="mr-2 h-4 w-4" />
+                  Download zip
+               </DropdownMenuItem>
+               <DropdownMenuItem onClick={() => {}}>
+                  <FilePen className="mr-2 h-4 w-4" />
+                  Rename
+               </DropdownMenuItem>
+               <DropdownMenuItem onClick={() => {}}>
+                  <FolderInput className="mr-2 h-4 w-4" />
+                  Move
+               </DropdownMenuItem>
+               <DropdownMenuItem onClick={() => {}}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  Make a Copy
+               </DropdownMenuItem>
+               <DropdownMenuSeparator />
+               <DropdownMenuItem
+                  className="text-destructive dark:text-red-500"
+                  onClick={() => setOpen(true)}
+               >
+                  <FileX className="mr-2 h-4 w-4" />
                   Delete
+               </DropdownMenuItem>
+               <DropdownMenuItem className="text-destructive dark:text-red-500" onClick={() => {}}>
+                  <Trash className="mr-2 h-4 w-4" />
+                  Move to Trash
                </DropdownMenuItem>
             </DropdownMenuContent>
          </DropdownMenu>
@@ -74,19 +117,32 @@ const FolderCardAction = ({ onFolderDelete }: { onFolderDelete: any }) => {
    );
 };
 
-type Props = { path: string };
+type Props = { content: contentType };
 
-const FolderCard = ({ path }: Props) => {
-   const folderName = path.split('/').slice(-2, -1);
-   const onFolderDelete = async () => {
-      return await deleteFolder(path);
-   };
+const FolderCard = ({ content }: Props) => {
+   const router = useRouter();
+   const pathname = usePathname();
+   const { name, path } = content;
    return (
-      <Card className="bg-secondary">
-         <CardHeader className="p-5">
-            <CardTitle className="flex items-start justify-between">
-               <span className="truncate text-ellipsis text-nowrap text-sm">{folderName}</span>
-               <FolderCardAction onFolderDelete={onFolderDelete} />
+      <Card className="h-full w-full cursor-pointer bg-secondary p-0">
+         <CardHeader className="w-full p-0">
+            <CardTitle className="flex w-full items-start justify-between p-5">
+               <Button
+                  variant={'link'}
+                  asChild
+                  onClick={() => {
+                     router.push(pathname + '/' + name);
+                  }}
+                  className="w-full px-0"
+               >
+                  <div className="flex h-5 w-full items-center gap-2">
+                     <FaFolder className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                     <span className="w-[90%] truncate text-ellipsis text-nowrap text-sm">
+                        {name}
+                     </span>
+                  </div>
+               </Button>
+               <FolderCardAction path={path} />
             </CardTitle>
          </CardHeader>
       </Card>

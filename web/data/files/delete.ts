@@ -22,7 +22,9 @@ const getSignedUrlForDelete = async (key: string) => {
    }
 };
 
-export const deleteFileNoAuth = async (key: string) => {
+export const deleteFileNoAuth = async (
+   key: string,
+): Promise<{ error?: string; success?: string }> => {
    console.log(key);
    const signedUrl = await getSignedUrlForDelete(key);
    if (!signedUrl)
@@ -61,15 +63,17 @@ export const deleteFolder = async (folderPath: string) => {
       };
 
    try {
-      const contents = await listContentNoAuth(folderPath);
-
+      let contents = await listContentNoAuth(folderPath);
+      // @ts-ignore
+      contents.push({ path: folderPath });
       if (!contents) return { error: 'No such folder exists!' };
 
       let error: string[] = [];
       for (let content of contents) {
-         if (content.endsWith('/')) content += '/';
-         const result = await deleteFileNoAuth(content);
-         if (result.error) error.push(content.substring(folderPath.length) + ': ' + result.error);
+         let path = content.path;
+         if (path.endsWith('/')) path += '/';
+         const result = await deleteFileNoAuth(path);
+         if (result.error) error.push(path.substring(folderPath.length) + ': ' + result.error);
       }
       if (error.length) return { error: error.join('<br/>') };
       return { success: '1 folder deleted' };

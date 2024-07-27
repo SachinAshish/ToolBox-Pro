@@ -21,20 +21,24 @@ export const UserButton = () => {
    return (
       <DropdownMenu>
          <DropdownMenuTrigger className="focus:outline-none">
-            <Avatar>
+            <Avatar className="outline outline-1 outline-accent-foreground/20">
                <AvatarImage src={user?.image || undefined} />
                <AvatarFallback className="bg-neutral-700 text-white">
                   <User />
                </AvatarFallback>
             </Avatar>
          </DropdownMenuTrigger>
-         <DropdownMenuContent className="w-40" align="end">
+         <DropdownMenuContent className="w-60" align="end">
             <DropdownMenuItem>
-               <Link href={'/dashboard'} className="flex">
+               <User className="mr-2 h-4 w-4" />
+               Profile
+            </DropdownMenuItem>
+            <Link href={'/dashboard'}>
+               <DropdownMenuItem>
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   Dashboard
-               </Link>
-            </DropdownMenuItem>
+               </DropdownMenuItem>
+            </Link>
             <DropdownMenuSeparator />
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -43,19 +47,19 @@ export const UserButton = () => {
                   <Settings className="mr-2 h-4 w-4" />
                   Settings
                </DropdownMenuItem>
-               <DropdownMenuItem>
-                  <Link href={'/dashboard/files'} className="flex">
+               <Link href={'/dashboard/files'}>
+                  <DropdownMenuItem>
                      <File className="mr-2 h-4 w-4" />
                      Files
-                  </Link>
-               </DropdownMenuItem>
+                  </DropdownMenuItem>
+               </Link>
                <DropdownMenuItem>
                   <CreditCard className="mr-2 h-4 w-4" />
                   <span>Billing</span>
                </DropdownMenuItem>
                <DropdownMenuSeparator />
                <LogoutButton>
-                  <DropdownMenuItem className="text-destructive">
+                  <DropdownMenuItem className="text-destructive dark:text-red-500">
                      <LogOut className="mr-2 h-4 w-4" />
                      Logout
                   </DropdownMenuItem>

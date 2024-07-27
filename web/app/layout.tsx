@@ -4,6 +4,7 @@ import './globals.css';
 import { SessionProvider } from 'next-auth/react';
 import { auth } from '@/auth';
 import Navbar from '@/components/navbar';
+import { ThemeProvider } from '@/providers/theme-provider';
 
 const font = Poppins({
    subsets: ['latin'],
@@ -24,13 +25,15 @@ export default async function RootLayout({
 }>) {
    const session = await auth();
    return (
-      <SessionProvider session={session}>
-         <html lang="en">
-            <body className={font.className}>
-               <Navbar />
-               {children}
-            </body>
-         </html>
-      </SessionProvider>
+      <html lang="en">
+         <body className={font.className}>
+            <SessionProvider session={session}>
+               <ThemeProvider attribute="class" defaultTheme="light">
+                  <Navbar />
+                  {children}
+               </ThemeProvider>
+            </SessionProvider>
+         </body>
+      </html>
    );
 }

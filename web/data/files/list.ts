@@ -4,6 +4,8 @@ import { ListObjectsV2Command } from '@aws-sdk/client-s3';
 import s3Client from '@/lib/object-db';
 import { verifyCurrentUser } from '@/lib/auth/verify';
 import { User } from '@prisma/client';
+import mime from 'mime-types';
+import { contentType } from '@/types';
 
 export const listFilesNoAuth = async (path: string) => {
    const command = new ListObjectsV2Command({
@@ -36,7 +38,7 @@ export const listFiles = async (path: string) => {
          data: fileNames || [],
       };
    } catch (err) {
-      console.error('Error listing files', err);
+      console.log('Error listing files', err);
       return { error: 'Error listing files!' };
    }
 };
@@ -77,17 +79,37 @@ export const listFolders = async (path: string) => {
 };
 
 export const listContentNoAuth = async (path: string) => {
+   path = path.endsWith('/') ? path.slice(0, -1) : path;
    const command = new ListObjectsV2Command({
       Bucket: 'data',
-      Prefix: path.endsWith('/') ? path.slice(0, -1) : path,
+      Prefix: path,
    });
 
    const data = await s3Client.send(command);
-   const contents = data.Contents?.map((content) => content.Key!.replaceAll('//', '/'));
-   return contents;
+   const contents = data.Contents?.map((content) => content.Key!.replaceAll('//', '/')) || [];
+   const content_details: contentType[] = [];
+   for (const contentPath of contents) {
+      if (contentPath === path + '/') continue;
+      const isFolder = contentPath.endsWith('/');
+      let details: contentType = {
+         type: '',
+         name: '',
+         path: '',
+      };
+      if (isFolder) {
+         details.type = 'directory';
+         details.name = contentPath.split('/').slice(-2, -1)[0];
+      } else {
+         details.type = mime.lookup(contentPath);
+         details.name = contentPath.split('/').slice(-1)[0];
+      }
+      details.path = contentPath;
+      content_details.push(details);
+   }
+   return content_details;
 };
 
-export const listContent = async (path: string) => {
+export const listContent = async (path: string, depth?: number) => {
    let user: User;
    const verification = await verifyCurrentUser();
    if (!verification.success) return { error: verification.error };
@@ -98,9 +120,23 @@ export const listContent = async (path: string) => {
       };
 
    const initial_path = user.id + '/' + 'drive/';
+   const folderPath = initial_path + (path ? path + '/' : '');
 
    try {
-      const contents = await listContentNoAuth(initial_path + path);
+      let contents = await listContentNoAuth(folderPath);
+      if (depth)
+         contents = contents.filter((content) => {
+            let { path } = content;
+
+            const isFolder = path.endsWith('/');
+            if (isFolder) path = path.substring(0, path.length - 1);
+
+            const pathArr = path.split('/');
+            const folderPathArr = folderPath.split('/');
+
+            if (pathArr.length === folderPathArr.length + depth - 1) return true;
+            return false;
+         });
       return {
          data: contents || [],
       };

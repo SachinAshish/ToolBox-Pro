@@ -31,3 +31,6 @@ next-env.d.ts
 
 # local data reserves
 data/*/*/*
+
+# helper files
+helper.*

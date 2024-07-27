@@ -19,12 +19,14 @@ import { useState } from 'react';
 import { Input } from '../ui/input';
 import { createFolder } from '@/data/files/create';
 import { useToast } from '../ui/use-toast';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 type Props = {};
 
 const FolderForm = (props: Props) => {
    const router = useRouter();
+   const pathname = usePathname();
+   const folderPath = pathname.replace('/dashboard/files', '');
    const { toast } = useToast();
    const [error, setError] = useState<string | undefined>('');
    const [success, setSuccess] = useState<string | undefined>('');
@@ -38,7 +40,7 @@ const FolderForm = (props: Props) => {
 
    const onSubmit = async (values: z.infer<typeof FolderSchema>) => {
       const name = values.name;
-      const path = name + '/';
+      const path = folderPath + '/' + name + '/';
       const result = await createFolder(path);
 
       if (result.success) {

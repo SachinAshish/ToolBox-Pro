@@ -81,6 +81,7 @@ services:
     container_name: object_store
     environment:
       - AWS_DEFAULT_REGION=us-east-1
+      - DISABLE_CORS_CHECKS=1 
       - SERVICES=s3
       - PERSIST_DEFAULT=0
       - PERSIST_S3=1

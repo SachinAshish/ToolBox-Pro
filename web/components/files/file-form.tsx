@@ -14,12 +14,14 @@ import FormSuccess from '../form-success';
 import { useState, useTransition } from 'react';
 import { uploadFile } from '@/data/files/create';
 import { useToast } from '../ui/use-toast';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 type Props = {};
 
 const FileForm = (props: Props) => {
    const router = useRouter();
+   const pathname = usePathname();
+   const folderPath = pathname.replace('/dashboard/files', '');
    const [error, setError] = useState<string | undefined>('');
    const [success, setSuccess] = useState<string | undefined>('');
    const [isPending, startTransition] = useTransition();
@@ -39,9 +41,9 @@ const FileForm = (props: Props) => {
 
       for (const file of inputFiles) {
          const formData = new FormData();
-         formData.append('file', file, file.name);
+         formData.append('file', file);
 
-         const result = await uploadFile(formData);
+         const result = await uploadFile(formData, folderPath);
 
          if (result.success) {
             formFiles = formFiles.filter((f) => f.name !== file.name);
@@ -103,12 +105,15 @@ const FileForm = (props: Props) => {
                         }}
                         dropzoneOptions={dropzone}
                      >
-                        <FileInput className="border-2 border-dashed border-black">
+                        <FileInput className="border-2 border-dashed border-primary">
                            <div className="flex w-full flex-col items-center justify-center py-16">
                               <Upload className="mb-4 h-8 w-8" />
                               <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
                                  <span className="font-semibold">Click to upload</span>
                                  &nbsp; or drag and drop
+                              </p>
+                              <p className="text-sm text-gray-500 dark:text-gray-400">
+                                 Maximum <span className="font-semibold">10 files</span> at a time
                               </p>
                            </div>
                         </FileInput>
