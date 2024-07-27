@@ -17,8 +17,8 @@ RUN if [ "$NODE_ENV" = "development" ]; \
 # Just for production, you do not need it during development as you have a bind mount
 COPY . .
 
-# Expose port 3000
-EXPOSE 3000
+# Expose port 5000
+EXPOSE 5000
 
 # run npm run dev for development server
 CMD ["npm", "run", "start"]

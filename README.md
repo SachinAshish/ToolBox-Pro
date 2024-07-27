@@ -4,10 +4,10 @@ Welcome to the AI Toolbox documentation. This application leverages artificial i
 
 ## Features
 
+-  Authentication with email verification and reset password functionality
 -  Light/dark mode toggle
 -  A suite of PDF operations
--  Authentication with email verification and reset password functionality
--  Exposed API for integrating with external scripts.
+-  A place to store all the types of files and preview them, and organized into folders, all of which is stored in AWS s3.
 
 ## Run Locally
 
@@ -37,6 +37,12 @@ To stop the docker containers
 
 ```sh
 sudo make stop
+```
+
+For restarting the entire application for some reason
+
+```sh
+sudo make restart
 ```
 
 > **Note** - The services will keep on running in the background if not stopped.

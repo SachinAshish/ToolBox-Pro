@@ -7,6 +7,7 @@ This file provides information about all the docker container present inside thi
 -  [Mongo](#mongo): To Provide Mongo database for development.
 -  [Mongo_panel](#mongo_panel): To provide a web ui for managing mongodb.
 -  [Localstack S3](#localstack-s3): To provide object storage.
+-  [Sevice_Mail](#sevice_mail): For sending emails for verifcation and other things
 -  [Pdf-API](#pdf-api): To provide an API for pdf manipulation
 
 The details of all the containers and how to access them are given below:
@@ -101,6 +102,16 @@ region: "us-east-1" # Dummy for development purposes
 -  For referencing the host address you can use `s3` keyword.
 
 > **Note**: After this container runs, it will create a folder inside ./data folder for persistent data
+
+### Service_Mail
+
+-  It is a mail service hosted locally for sending mail to different users for several puposes like email validation.(In production and exeternal service like render may be used)
+
+-  The api is exposed at `localhost:5000` for testing purposes(not required as it is referenced using the container name inside the website anyways).
+
+-  It uses nodemailer for the accessing the SMTP service provided by gmail(I will be using my gmail id). It also uses express js for api creation as it is the fastest, easiest and unopinionated.
+
+-  For referencing the host address you can use `service_mail` keyword.
 
 ### Pdf-API
 

@@ -2,7 +2,9 @@
 
 -  `/web`: Contains a next js app for the user interface.
 
--  `/aws`: Contains the Dockerfile for running the localstack s3 service for file storage
+-  `/mail`: Contains the code for mail service used inside the website.
+
+-  `/aws`: Contains the Dockerfile for running the localstack s3 service for file storage.
 
 -  `/data`: Contains the data of aws and mongo containers for making it persistent.
 

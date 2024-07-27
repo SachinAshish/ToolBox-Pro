@@ -13,6 +13,11 @@
 ## Contents
 
 -  [Pdf-API](#pdf-api)
+-  [Service_Mail](#service_mail)
+
+## Service_Mail
+
+The mail service api is yet to be made.
 
 ## Pdf-API
 

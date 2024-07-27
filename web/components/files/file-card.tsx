@@ -43,6 +43,7 @@ import { contentType } from '@/types';
 import FileIcon from './file-icon';
 import FileThumbnail from './file-thumbnail';
 import { BarLoader } from 'react-spinners';
+import Link from 'next/link';
 
 const FileCardAction = ({ filePath }: { filePath: string }) => {
    const router = useRouter();
@@ -66,6 +67,31 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
       }
    };
 
+   const onDownload = async () => {
+      toast({
+         title: 'Generating a private url to download',
+      });
+      const { error, success, url } = await getFileUrl(filePath);
+      if (error) {
+         toast({
+            title: 'Could not download file!',
+            description: error,
+         });
+      } else {
+         toast({
+            title: 'Private URL generated',
+            description: success,
+         });
+
+         // only for using locally or for development
+         const origin = window.location.origin;
+         const host = origin.substring(origin.lastIndexOf('/') + 1, origin.lastIndexOf(':'));
+         const fileUrl = url?.replace('object_store', host);
+
+         window.open(fileUrl, '_blank');
+      }
+   };
+
    return (
       <>
          <AlertDialog open={open}>
@@ -84,14 +110,14 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
          </AlertDialog>
          <DropdownMenu>
             <DropdownMenuTrigger className="z-10 -mr-2 focus:outline-none">
-               <MoreVertical className="h-5 w-5 cursor-pointer rounded-full text-muted-foreground transition-all hover:bg-gray-200 hover:text-primary active:text-muted-foreground" />
+               <MoreVertical className="h-5 w-5 cursor-pointer rounded-full text-muted-foreground transition-all hover:bg-gray-200 hover:text-primary active:text-muted-foreground dark:hover:bg-gray-700" />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40" align="start">
                <DropdownMenuItem onClick={() => {}}>
                   <Eye className="mr-2 h-4 w-4" />
                   Preview
                </DropdownMenuItem>
-               <DropdownMenuItem onClick={() => {}}>
+               <DropdownMenuItem onClick={onDownload}>
                   <Download className="mr-2 h-4 w-4" />
                   Download
                </DropdownMenuItem>
@@ -108,7 +134,10 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
                   Make a Copy
                </DropdownMenuItem>
                <DropdownMenuSeparator />
-               <DropdownMenuItem className="text-destructive dark:text-red-500" onClick={() => setOpen(true)}>
+               <DropdownMenuItem
+                  className="text-destructive dark:text-red-500"
+                  onClick={() => setOpen(true)}
+               >
                   <FileX className="mr-2 h-4 w-4" />
                   Delete
                </DropdownMenuItem>
@@ -168,7 +197,7 @@ const FileCard = ({ content }: Props) => {
             </CardTitle>
          </CardHeader>
          <CardContent className="h-full w-full p-4 pt-0">
-            <div className="aspect-[13/9] h-full w-full overflow-hidden rounded-lg bg-gray-300 p-0 group-hover:brightness-90 group-active:brightness-100">
+            <div className="aspect-[13/9] h-full w-full overflow-hidden rounded-lg bg-gray-300 p-0 group-hover:brightness-90 group-active:brightness-100 dark:bg-slate-500">
                {fileUrl ? (
                   <FileThumbnail fileUrl={fileUrl} fileType={type} />
                ) : (

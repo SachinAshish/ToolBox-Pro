@@ -4,8 +4,6 @@ Welcome to ToolBox-Pro website, this application leverages artificial intelligen
 
 ## Features
 
--  light/dark mode
--  A suite of PDF operations
 -  Authentication
    -  Various providers like credentials, google and github
    -  JWT Authentication strategy
@@ -13,6 +11,17 @@ Welcome to ToolBox-Pro website, this application leverages artificial intelligen
    -  Email verification
    -  Forget password functionality
    -  Modern UI/UX
+-  Modern UI
+   -  light/dark mode
+-  A place to store and access all the files
+   -  Folder organization
+   -  Rename file/folder functionality.
+   -  Move files/folders from one location to other.
+   -  Download file as it is and folder as zip.
+   -  Make a copy of file/folder.
+   -  Move to Trash functionality.
+   -  File previewing capabilities.
+-  A suite of PDF operations
 
 ## Run Locally
 

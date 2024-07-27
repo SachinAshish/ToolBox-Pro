@@ -11,7 +11,7 @@ type Props = {
 
 const FileLayout = ({ children }: Props) => {
    return (
-      <main className="container mx-auto pt-12">
+      <main className="container mx-auto py-12">
          <div className="mb-4 flex items-center justify-between">
             <h1 className="text-4xl font-bold">Your Files</h1>
             <div className="flex gap-2">
@@ -27,7 +27,7 @@ const FileLayout = ({ children }: Props) => {
                   <FileForm />
                </DialogWrapper>
                <DialogWrapper
-                  title="Upload your files here"
+                  title="Name your folder"
                   trigger={
                      <Button className="flex gap-1.5">
                         <FolderPlus />
