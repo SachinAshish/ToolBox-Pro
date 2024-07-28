@@ -111,7 +111,7 @@ const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }
             open={makeCopyOpen}
             onOpenChange={() => setMakeCopyOpen((prev) => !prev)}
          >
-            <CopyFolderForm folderPath={path} close={() => setMakeCopyOpen(false)} />
+            <CopyFolderForm folderName={folderName} close={() => setMakeCopyOpen(false)} />
          </DialogWrapper>
          <DropdownMenu>
             <DropdownMenuTrigger className="-mr-2 focus:outline-none">

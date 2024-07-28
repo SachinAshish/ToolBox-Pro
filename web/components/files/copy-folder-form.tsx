@@ -20,27 +20,20 @@ import { Input } from '../ui/input';
 import { useToast } from '../ui/use-toast';
 import { useRouter, usePathname } from 'next/navigation';
 import { copyFolder } from '@/data/files/copy';
-import {
-   getFileName,
-   withoutTrailingSlash,
-   withLeadingSlash,
-   getFilePath,
-   withTrailingSlash,
-} from '@/lib/utils';
+import { withLeadingSlash, withTrailingSlash } from '@/lib/utils';
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 type Props = {
-   folderPath: string;
+   folderName: string;
    close: Function;
 };
 
-const CopyFolderForm = ({ folderPath, close }: Props) => {
+const CopyFolderForm = ({ folderName, close }: Props) => {
    const user = useCurrentUser();
    const router = useRouter();
    const pathname = usePathname();
 
-   const folderName = getFileName(withoutTrailingSlash(folderPath));
-   folderPath = pathname.replace('/dashboard/files/', '');
+   const folderPath = pathname.replace('/dashboard/files', '');
 
    const { toast } = useToast();
    const [error, setError] = useState<string | undefined>('');
@@ -60,7 +53,7 @@ const CopyFolderForm = ({ folderPath, close }: Props) => {
       let { path, name } = values;
       path = path.replace('Files/', user.id + '/drive/');
 
-      const sourceFolder = user.id + '/drive/' + folderPath + '/' + folderName + '/';
+      const sourceFolder = user.id + '/drive' + folderPath + '/' + folderName + '/';
       const destinationFolder = path + name + '/';
 
       const result = await copyFolder(sourceFolder, destinationFolder);
