@@ -54,7 +54,11 @@ export const uploadFile = async (formData: FormData, path: string) => {
          error: 'Something unexpected happened! Please report it <a href="https://github.com/ArjunVarshney/ToolBox-Pro/issues">here</a>',
       };
 
-   const initial_path = user.id + '/drive' + path + '/';
+   let initial_path = user.id + '/drive';
+   
+   if (path.startsWith(initial_path)) initial_path = path + '/';
+   else initial_path = initial_path + '/' + path + '/';
+   initial_path = initial_path.replaceAll('//', '/');
 
    const file = formData.get('file') as File;
    if (!mime.lookup(file.name)) return { error: 'File type not recognized!' };

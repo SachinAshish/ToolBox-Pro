@@ -10,7 +10,8 @@ type Props = {
 };
 
 const FilesPage = async ({ params }: Props) => {
-   const contents = (await listContent(params.path?.join('/') || '', 1)).data;
+   const contents = (await listContent(params.path?.join('/').replaceAll('%20', ' ') || '', 1))
+      .data;
    const files: contentType[] = [];
    const folders: contentType[] = [];
    contents?.map((content) => {

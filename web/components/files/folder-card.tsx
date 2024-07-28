@@ -36,25 +36,51 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useToast } from '../ui/use-toast';
 import { contentType } from '@/types';
 import { Button } from '../ui/button';
+import { createZip } from '@/data/files/zip';
+import Link from 'next/link';
 
-const FolderCardAction = ({ path }: { path: string }) => {
+const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }) => {
    const { toast } = useToast();
    const router = useRouter();
    const [open, setOpen] = useState(false);
 
    const onDelete = async () => {
-      const result = await deleteFolder(path);
       toast({
          title: 'Deleting a Folder',
       });
+      const result = await deleteFolder(path);
       if (result?.success) {
          toast({
             title: result.success,
             description: '1 folder was permanently deleted from Your Files.',
          });
          router.refresh();
+      } else {
+         toast({
+            title: result?.error,
+            description: 'Something went wrong while deleting the folder',
+         });
       }
       setOpen(false);
+   };
+
+   const onZip = async () => {
+      toast({
+         title: 'Creating a zip file for ' + path.split('/').slice(-2, -1),
+      });
+      const result = await createZip(path);
+      if (result.success) {
+         toast({
+            title: result.success,
+            description: 'The zip file must be present in the parent of the folder.',
+         });
+         router.refresh();
+      } else {
+         toast({
+            title: result.error,
+            description: 'Something went wrong while creating the zip file',
+         });
+      }
    };
 
    return (
@@ -79,13 +105,15 @@ const FolderCardAction = ({ path }: { path: string }) => {
                <MoreVertical className="h-5 w-5 cursor-pointer rounded-full text-muted-foreground transition-all hover:bg-gray-200 hover:text-primary active:text-muted-foreground dark:hover:bg-gray-700" />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40" align="start">
-               <DropdownMenuItem onClick={() => {}}>
-                  <FolderOpen className="mr-2 h-4 w-4" />
-                  Open
-               </DropdownMenuItem>
-               <DropdownMenuItem onClick={() => {}}>
+               <Link href={openLink}>
+                  <DropdownMenuItem>
+                     <FolderOpen className="mr-2 h-4 w-4" />
+                     Open
+                  </DropdownMenuItem>
+               </Link>
+               <DropdownMenuItem onClick={onZip}>
                   <FolderArchive className="mr-2 h-4 w-4" />
-                  Download zip
+                  Create zip
                </DropdownMenuItem>
                <DropdownMenuItem onClick={() => {}}>
                   <FilePen className="mr-2 h-4 w-4" />
@@ -142,7 +170,7 @@ const FolderCard = ({ content }: Props) => {
                      </span>
                   </div>
                </Button>
-               <FolderCardAction path={path} />
+               <FolderCardAction path={path} openLink={pathname + '/' + name} />
             </CardTitle>
          </CardHeader>
       </Card>
