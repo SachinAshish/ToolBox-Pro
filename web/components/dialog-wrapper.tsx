@@ -3,14 +3,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 
 type Props = {
    title: string;
-   trigger: React.ReactNode;
+   trigger?: React.ReactNode;
    children: React.ReactNode;
 };
 
-const DialogWrapper = ({ title, trigger, children }: Props) => {
+const DialogWrapper = ({ title, trigger, children, ...props }: Props) => {
    return (
-      <Dialog>
-         <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <Dialog {...props}>
+         {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
          <DialogContent>
             <DialogHeader>
                <DialogTitle className="mb-4">{title}</DialogTitle>

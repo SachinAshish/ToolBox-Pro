@@ -8,25 +8,15 @@ import { listFilesNoAuth, listFoldersNoAuth } from './list';
 import { verifyCurrentUser } from '@/lib/auth/verify';
 import { User } from '@prisma/client';
 import mime from 'mime-types';
+import { withTrailingSlash } from '@/lib/utils';
 
-export const createFolder = async (path: string) => {
-   let user: User;
-   const verification = await verifyCurrentUser();
-   if (!verification.success) return { error: verification.error };
-   else if (verification.data) user = verification.data;
-   else
-      return {
-         error: 'Something unexpected happened! Please report it <a href="https://github.com/ArjunVarshney/ToolBox-Pro/issues">here</a>',
-      };
-
-   const initial_path = user.id + '/drive';
-
-   const folders = await listFoldersNoAuth(initial_path + path);
+export const createFolderNoAuth = async (path: string) => {
+   const folders = await listFoldersNoAuth(path);
    if (folders?.length) return { error: 'A folder with this name already exists!' };
 
    const command = new PutObjectCommand({
       Bucket: 'data',
-      Key: initial_path + path + '/',
+      Key: withTrailingSlash(path),
       ContentType: 'text/directory',
    });
    try {
@@ -39,9 +29,25 @@ export const createFolder = async (path: string) => {
       if (result.status === 200) return { success: `${path} has been created.` };
       return { error: `The folder ${path} could not be created.` };
    } catch (error) {
-      console.log(error);
+      console.log('createFolderNoAuth ', error);
       return { error: 'Something went wrong!' };
    }
+};
+
+export const createFolder = async (path: string) => {
+   let user: User;
+   const verification = await verifyCurrentUser();
+   if (!verification.success) return { error: verification.error };
+   else if (verification.data) user = verification.data;
+   else
+      return {
+         error: 'Something unexpected happened! Please report it <a href="https://github.com/ArjunVarshney/ToolBox-Pro/issues">here</a>',
+      };
+
+   const initial_path = user.id + '/drive';
+   const complete_path = path.startsWith(initial_path) ? path : initial_path + path;
+
+   return await createFolderNoAuth(complete_path);
 };
 
 export const uploadFile = async (formData: FormData, path: string) => {
@@ -55,7 +61,7 @@ export const uploadFile = async (formData: FormData, path: string) => {
       };
 
    let initial_path = user.id + '/drive';
-   
+
    if (path.startsWith(initial_path)) initial_path = path + '/';
    else initial_path = initial_path + '/' + path + '/';
    initial_path = initial_path.replaceAll('//', '/');

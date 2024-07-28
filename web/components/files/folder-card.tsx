@@ -38,11 +38,17 @@ import { contentType } from '@/types';
 import { Button } from '../ui/button';
 import { createZip } from '@/data/files/zip';
 import Link from 'next/link';
+import DialogWrapper from '../dialog-wrapper';
+import CopyFolderForm from './copy-folder-form';
+import { getFileName, withoutTrailingSlash } from '@/lib/utils';
 
 const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }) => {
    const { toast } = useToast();
    const router = useRouter();
    const [open, setOpen] = useState(false);
+   const [makeCopyOpen, setMakeCopyOpen] = useState<boolean>(false);
+
+   const folderName = getFileName(withoutTrailingSlash(openLink));
 
    const onDelete = async () => {
       toast({
@@ -100,6 +106,13 @@ const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }
                </AlertDialogFooter>
             </AlertDialogContent>
          </AlertDialog>
+         <DialogWrapper
+            title={'Create a copy of ' + folderName + ' to'}
+            open={makeCopyOpen}
+            onOpenChange={() => setMakeCopyOpen((prev) => !prev)}
+         >
+            <CopyFolderForm folderPath={path} close={() => setMakeCopyOpen(false)} />
+         </DialogWrapper>
          <DropdownMenu>
             <DropdownMenuTrigger className="-mr-2 focus:outline-none">
                <MoreVertical className="h-5 w-5 cursor-pointer rounded-full text-muted-foreground transition-all hover:bg-gray-200 hover:text-primary active:text-muted-foreground dark:hover:bg-gray-700" />
@@ -123,7 +136,7 @@ const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }
                   <FolderInput className="mr-2 h-4 w-4" />
                   Move
                </DropdownMenuItem>
-               <DropdownMenuItem onClick={() => {}}>
+               <DropdownMenuItem onClick={() => setMakeCopyOpen(true)}>
                   <Copy className="mr-2 h-4 w-4" />
                   Make a Copy
                </DropdownMenuItem>

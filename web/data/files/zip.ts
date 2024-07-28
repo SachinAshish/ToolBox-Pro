@@ -24,7 +24,14 @@ export const createZip = async (path: string): Promise<{ error?: string; success
    const folderName = path.split('/').slice(-2, -1)[0];
    const s3Destination = path.substring(0, path.length - folderName.length - 2);
    const zipName = folderName + '-' + user.id + '-' + new Date().getTime() + '.zip';
-   const zipDestination = join('/app/zip-data', zipName);
+   const zipDataFolder = '/app/zip-data';
+   const zipDestination = join(zipDataFolder, zipName);
+
+   if (!fs.existsSync(zipDataFolder)) {
+      fs.mkdirSync(zipDataFolder, {
+         recursive: true,
+      });
+   }
 
    const output = fs.createWriteStream(zipDestination);
 

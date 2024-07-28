@@ -1,7 +1,7 @@
 import DialogWrapper from '@/components/dialog-wrapper';
 import CurrentFolderLocation from '@/components/files/current-folder-location';
-import FileForm from '@/components/files/file-form';
-import FolderForm from '@/components/files/folder-form';
+import FileForm from '@/components/files/create-file-form';
+import FolderForm from '@/components/files/create-folder-form';
 import { Button } from '@/components/ui/button';
 import { FilePlus, FolderPlus } from 'lucide-react';
 

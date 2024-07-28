@@ -44,15 +44,21 @@ import FileIcon from './file-icon';
 import FileThumbnail from './file-thumbnail';
 import { BarLoader } from 'react-spinners';
 import Link from 'next/link';
+import DialogWrapper from '../dialog-wrapper';
+import CopyFileForm from './copy-file-form';
+import { getFileName } from '@/lib/utils';
 
 const FileCardAction = ({ filePath }: { filePath: string }) => {
    const router = useRouter();
    const { toast } = useToast();
-   const [open, setOpen] = useState(false);
+   const [deleteOpen, setDeleteOpen] = useState(false);
+   const [makeCopyOpen, setMakeCopyOpen] = useState(false);
+
+   const fileName = getFileName(filePath);
 
    const onDelete = async () => {
       {
-         setOpen(false);
+         setDeleteOpen(false);
          toast({
             title: 'Deleting a file',
          });
@@ -94,7 +100,7 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
 
    return (
       <>
-         <AlertDialog open={open}>
+         <AlertDialog open={deleteOpen}>
             <AlertDialogContent>
                <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -103,11 +109,20 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
                   </AlertDialogDescription>
                </AlertDialogHeader>
                <AlertDialogFooter>
-                  <AlertDialogCancel onClick={() => setOpen(false)}>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={onDelete}>Continue</AlertDialogAction>
+                  <AlertDialogCancel onClick={() => setDeleteOpen(false)}>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={onDelete} className="bg-destructive dark:bg-red-500">
+                     Continue
+                  </AlertDialogAction>
                </AlertDialogFooter>
             </AlertDialogContent>
          </AlertDialog>
+         <DialogWrapper
+            title={'Create a copy of ' + fileName + ' to'}
+            open={makeCopyOpen}
+            onOpenChange={() => setMakeCopyOpen((prev) => !prev)}
+         >
+            <CopyFileForm filePath={filePath} close={() => setMakeCopyOpen(false)} />
+         </DialogWrapper>
          <DropdownMenu>
             <DropdownMenuTrigger className="z-10 -mr-2 focus:outline-none">
                <MoreVertical className="h-5 w-5 cursor-pointer rounded-full text-muted-foreground transition-all hover:bg-gray-200 hover:text-primary active:text-muted-foreground dark:hover:bg-gray-700" />
@@ -129,14 +144,18 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
                   <FolderInput className="mr-2 h-4 w-4" />
                   Move
                </DropdownMenuItem>
-               <DropdownMenuItem onClick={() => {}}>
+               <DropdownMenuItem
+                  onClick={() => {
+                     setMakeCopyOpen(true);
+                  }}
+               >
                   <Copy className="mr-2 h-4 w-4" />
                   Make a Copy
                </DropdownMenuItem>
                <DropdownMenuSeparator />
                <DropdownMenuItem
                   className="text-destructive dark:text-red-500"
-                  onClick={() => setOpen(true)}
+                  onClick={() => setDeleteOpen(true)}
                >
                   <FileX className="mr-2 h-4 w-4" />
                   Delete
