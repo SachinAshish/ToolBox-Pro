@@ -11,20 +11,23 @@ import { createFolderNoAuth } from './create';
 export const copyObjectNoAuth = async (
    path: string,
    destPath: string,
+   directObject?: boolean,
 ): Promise<{ error?: string; success?: string }> => {
    // check if the file already exists
    const files = await listFilesNoAuth(destPath);
    if (files) return { error: 'A file with this name already exists!' };
 
    // check if the folders exists, if not create it
-   const folders = destPath.split('/');
-   const foldersToCheck = folders.slice(2, -1);
-   let existingFolderPath = folders.slice(0, 2).join('/') + '/';
-   for (const folder of foldersToCheck) {
-      existingFolderPath += folder + '/';
-      await createFolderNoAuth(existingFolderPath);
+   if (!directObject) {
+      const folders = destPath.split('/');
+      const foldersToCheck = folders.slice(2, -1);
+      let existingFolderPath = folders.slice(0, 2).join('/') + '/';
+      for (const folder of foldersToCheck) {
+         existingFolderPath += folder + '/';
+         await createFolderNoAuth(existingFolderPath);
+      }
    }
-
+   
    const command = new CopyObjectCommand({
       CopySource: 'data/' + path,
       Bucket: 'data',
@@ -66,19 +69,10 @@ export const copyFile = async (
    return await copyObjectNoAuth(path, dest);
 };
 
-export const copyFolder = async (
+export const copyFolderNoAuth = async (
    source: string,
    dest: string,
 ): Promise<{ error?: string; success?: string }> => {
-   let user: User;
-   const verification = await verifyCurrentUser();
-   if (!verification.success) return { error: verification.error };
-   else if (verification.data) user = verification.data;
-   else
-      return {
-         error: 'Something unexpected happened! Please report it <a href="https://github.com/ArjunVarshney/ToolBox-Pro/issues">here</a>',
-      };
-
    const existingFolders = await listFoldersNoAuth(dest);
    if (existingFolders)
       return { error: 'A folder with this name already exists on this location.' };
@@ -96,6 +90,22 @@ export const copyFolder = async (
       if (res.error) f = 1;
    }
    return f
-      ? { error: 'Something went wrong! All of the files in the have not been copied' }
+      ? { error: 'Something went wrong! All of the files in the folder have not been copied' }
       : { success: 'Folder copied successfully' };
+};
+
+export const copyFolder = async (
+   source: string,
+   dest: string,
+): Promise<{ error?: string; success?: string }> => {
+   let user: User;
+   const verification = await verifyCurrentUser();
+   if (!verification.success) return { error: verification.error };
+   else if (verification.data) user = verification.data;
+   else
+      return {
+         error: 'Something unexpected happened! Please report it <a href="https://github.com/ArjunVarshney/ToolBox-Pro/issues">here</a>',
+      };
+
+   return await copyFolderNoAuth(source, dest);
 };

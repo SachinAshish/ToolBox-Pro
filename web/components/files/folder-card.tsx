@@ -41,14 +41,44 @@ import Link from 'next/link';
 import DialogWrapper from '../dialog-wrapper';
 import CopyFolderForm from './copy-folder-form';
 import { getFileName, withoutTrailingSlash } from '@/lib/utils';
+import RenameFolderForm from './rename-folder-form';
+import MoveFolderForm from './move-folder-form';
+import { moveFolderToTrash } from '@/data/files/trash';
 
 const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }) => {
    const { toast } = useToast();
    const router = useRouter();
    const [open, setOpen] = useState(false);
    const [makeCopyOpen, setMakeCopyOpen] = useState<boolean>(false);
+   const [renameOpen, setRenameOpen] = useState(false);
+   const [moveOpen, setMoveOpen] = useState(false);
 
    const folderName = getFileName(withoutTrailingSlash(openLink));
+
+   const onMoveToTrash = async () => {
+      {
+         toast({
+            title: 'Moving a file to trash',
+         });
+         const result = await moveFolderToTrash(path);
+         if (result.success) {
+            toast({
+               title: result.success,
+               description: '1 folder was moved to Trash.',
+            });
+            router.refresh();
+         } else if (result.error) {
+            toast({
+               title: 'Could not move the folder to trash!',
+               description: result.error,
+            });
+         } else {
+            toast({
+               title: 'Network error',
+            });
+         }
+      }
+   };
 
    const onDelete = async () => {
       toast({
@@ -102,7 +132,9 @@ const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }
                </AlertDialogHeader>
                <AlertDialogFooter>
                   <AlertDialogCancel onClick={() => setOpen(false)}>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={onDelete}>Continue</AlertDialogAction>
+                  <AlertDialogAction onClick={onDelete} className="bg-destructive dark:bg-red-500">
+                     Continue
+                  </AlertDialogAction>
                </AlertDialogFooter>
             </AlertDialogContent>
          </AlertDialog>
@@ -112,6 +144,20 @@ const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }
             onOpenChange={() => setMakeCopyOpen((prev) => !prev)}
          >
             <CopyFolderForm folderName={folderName} close={() => setMakeCopyOpen(false)} />
+         </DialogWrapper>
+         <DialogWrapper
+            title={'Rename the ' + folderName + ' to'}
+            open={renameOpen}
+            onOpenChange={() => setRenameOpen((prev) => !prev)}
+         >
+            <RenameFolderForm folderPath={path} close={() => setRenameOpen(false)} />
+         </DialogWrapper>
+         <DialogWrapper
+            title={'Move the folder ' + folderName + '/ to'}
+            open={moveOpen}
+            onOpenChange={() => setMoveOpen((prev) => !prev)}
+         >
+            <MoveFolderForm folderPath={path} close={() => setMoveOpen(false)} />
          </DialogWrapper>
          <DropdownMenu>
             <DropdownMenuTrigger className="-mr-2 focus:outline-none">
@@ -128,11 +174,11 @@ const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }
                   <FolderArchive className="mr-2 h-4 w-4" />
                   Create zip
                </DropdownMenuItem>
-               <DropdownMenuItem onClick={() => {}}>
+               <DropdownMenuItem onClick={() => setRenameOpen(true)}>
                   <FilePen className="mr-2 h-4 w-4" />
                   Rename
                </DropdownMenuItem>
-               <DropdownMenuItem onClick={() => {}}>
+               <DropdownMenuItem onClick={() => setMoveOpen(true)}>
                   <FolderInput className="mr-2 h-4 w-4" />
                   Move
                </DropdownMenuItem>
@@ -148,7 +194,10 @@ const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }
                   <FileX className="mr-2 h-4 w-4" />
                   Delete
                </DropdownMenuItem>
-               <DropdownMenuItem className="text-destructive dark:text-red-500" onClick={() => {}}>
+               <DropdownMenuItem
+                  className="text-destructive dark:text-red-500"
+                  onClick={onMoveToTrash}
+               >
                   <Trash className="mr-2 h-4 w-4" />
                   Move to Trash
                </DropdownMenuItem>

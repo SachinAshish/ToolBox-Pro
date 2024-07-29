@@ -25,7 +25,6 @@ const getSignedUrlForDelete = async (key: string) => {
 export const deleteFileNoAuth = async (
    key: string,
 ): Promise<{ error?: string; success?: string }> => {
-   console.log(key);
    const signedUrl = await getSignedUrlForDelete(key);
    if (!signedUrl)
       return { error: 'Not able to generate a safe environment for deleting the file!' };
@@ -52,6 +51,29 @@ export const deleteFile = async (key: string) => {
    return await deleteFileNoAuth(key);
 };
 
+export const deleteFolderNoAuth = async (
+   folderPath: string,
+): Promise<{ error?: string; success?: string }> => {
+   try {
+      let contents = await listContentNoAuth(folderPath);
+
+      // @ts-ignore
+      contents.push({ path: folderPath });
+
+      let error: string[] = [];
+      for (let content of contents) {
+         let path = content.path;
+         const result = await deleteFileNoAuth(path);
+         if (result.error) error.push(path.substring(folderPath.length) + ': ' + result.error);
+      }
+      if (error.length) return { error: error.join('<br/>') };
+      return { success: '1 folder deleted' };
+   } catch (err) {
+      console.error('Error deleting folder', err);
+      return { error: 'Something went wrong!' };
+   }
+};
+
 export const deleteFolder = async (folderPath: string) => {
    let user: User;
    const verification = await verifyCurrentUser();
@@ -62,22 +84,5 @@ export const deleteFolder = async (folderPath: string) => {
          error: 'Something unexpected happened! Please report it <a href="https://github.com/ArjunVarshney/ToolBox-Pro/issues">here</a>',
       };
 
-   try {
-      let contents = await listContentNoAuth(folderPath);
-      // @ts-ignore
-      contents.push({ path: folderPath });
-      if (!contents) return { error: 'No such folder exists!' };
-
-      let error: string[] = [];
-      for (let content of contents) {
-         let path = content.path;
-         if (path.endsWith('/')) path += '/';
-         const result = await deleteFileNoAuth(path);
-         if (result.error) error.push(path.substring(folderPath.length) + ': ' + result.error);
-      }
-      if (error.length) return { error: error.join('<br/>') };
-      return { success: '1 folder deleted' };
-   } catch (err) {
-      console.error('Error deleting folder', err);
-   }
+   return await deleteFolderNoAuth(folderPath);
 };

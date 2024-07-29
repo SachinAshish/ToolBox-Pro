@@ -20,7 +20,7 @@ export const withTrailingSlash = (path: string) => (path.endsWith('/') ? path : 
 export const withLeadingSlash = (path: string) => (path.startsWith('/') ? path : '/' + path);
 
 export const withoutTrailingSlash = (path: string) =>
-   path.endsWith('/') ? path.substring(1, path.length - 1) : path;
+   path.endsWith('/') ? path.substring(0, path.length - 1) : path;
 
 export const withoutLeadingSlash = (path: string) =>
    path.startsWith('/') ? path.substring(1) : path;

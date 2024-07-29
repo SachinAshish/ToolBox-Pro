@@ -47,15 +47,44 @@ import Link from 'next/link';
 import DialogWrapper from '../dialog-wrapper';
 import CopyFileForm from './copy-file-form';
 import { getFileName } from '@/lib/utils';
+import RenameFileForm from './rename-file-form';
+import MoveFileForm from './move-file-form';
+import { moveFileToTrash } from '@/data/files/trash';
 
 const FileCardAction = ({ filePath }: { filePath: string }) => {
    const router = useRouter();
    const { toast } = useToast();
    const [deleteOpen, setDeleteOpen] = useState(false);
    const [makeCopyOpen, setMakeCopyOpen] = useState(false);
+   const [renameOpen, setRenameOpen] = useState(false);
+   const [moveOpen, setMoveOpen] = useState(false);
 
    const fileName = getFileName(filePath);
 
+   const onMoveToTrash = async () => {
+      {
+         toast({
+            title: 'Moving a file to trash',
+         });
+         const result = await moveFileToTrash(filePath);
+         if (result.success) {
+            toast({
+               title: result.success,
+               description: '1 file was moved to Trash.',
+            });
+            router.refresh();
+         } else if (result.error) {
+            toast({
+               title: 'Could not move the file to trash!',
+               description: result.error,
+            });
+         } else {
+            toast({
+               title: 'Network error',
+            });
+         }
+      }
+   };
    const onDelete = async () => {
       {
          setDeleteOpen(false);
@@ -69,6 +98,15 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
                description: '1 file was permanently deleted from Your Files.',
             });
             router.refresh();
+         } else if (result.error) {
+            toast({
+               title: 'Could not delete file!',
+               description: result.error,
+            });
+         } else {
+            toast({
+               title: 'Network error',
+            });
          }
       }
    };
@@ -117,11 +155,25 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
             </AlertDialogContent>
          </AlertDialog>
          <DialogWrapper
+            title={'Rename the ' + fileName + ' to'}
+            open={renameOpen}
+            onOpenChange={() => setRenameOpen((prev) => !prev)}
+         >
+            <RenameFileForm filePath={filePath} close={() => setRenameOpen(false)} />
+         </DialogWrapper>
+         <DialogWrapper
             title={'Create a copy of ' + fileName + ' to'}
             open={makeCopyOpen}
             onOpenChange={() => setMakeCopyOpen((prev) => !prev)}
          >
             <CopyFileForm filePath={filePath} close={() => setMakeCopyOpen(false)} />
+         </DialogWrapper>
+         <DialogWrapper
+            title={'Move ' + fileName + ' to'}
+            open={moveOpen}
+            onOpenChange={() => setMoveOpen((prev) => !prev)}
+         >
+            <MoveFileForm filePath={filePath} close={() => setMoveOpen(false)} />
          </DialogWrapper>
          <DropdownMenu>
             <DropdownMenuTrigger className="z-10 -mr-2 focus:outline-none">
@@ -136,11 +188,11 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
                   <Download className="mr-2 h-4 w-4" />
                   Download
                </DropdownMenuItem>
-               <DropdownMenuItem onClick={() => {}}>
+               <DropdownMenuItem onClick={() => setRenameOpen(true)}>
                   <FilePen className="mr-2 h-4 w-4" />
                   Rename
                </DropdownMenuItem>
-               <DropdownMenuItem onClick={() => {}}>
+               <DropdownMenuItem onClick={() => setMoveOpen(true)}>
                   <FolderInput className="mr-2 h-4 w-4" />
                   Move
                </DropdownMenuItem>
@@ -160,7 +212,10 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
                   <FileX className="mr-2 h-4 w-4" />
                   Delete
                </DropdownMenuItem>
-               <DropdownMenuItem className="text-destructive dark:text-red-500" onClick={() => {}}>
+               <DropdownMenuItem
+                  className="text-destructive dark:text-red-500"
+                  onClick={onMoveToTrash}
+               >
                   <Trash className="mr-2 h-4 w-4" />
                   Move to Trash
                </DropdownMenuItem>

@@ -87,6 +87,7 @@ const FileForm = (props: Props) => {
 
    const dropzone = {
       multiple: true,
+      maxFiles: 10,
    } satisfies DropzoneOptions;
 
    return (

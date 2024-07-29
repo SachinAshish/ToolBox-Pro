@@ -8,7 +8,7 @@ import {
    FormLabel,
    FormMessage,
 } from '@/components/ui/form';
-import { CopyFileSchema } from '@/schemas/files';
+import { MoveFileSchema } from '@/schemas/files';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -19,16 +19,16 @@ import { useState } from 'react';
 import { Input } from '../ui/input';
 import { useToast } from '../ui/use-toast';
 import { useRouter, usePathname } from 'next/navigation';
-import { copyFile } from '@/data/files/copy';
-import { getFileExtension, getFileName } from '@/lib/utils';
+import { getFileName } from '@/lib/utils';
 import { useCurrentUser } from '@/hooks/use-current-user';
+import { moveFile } from '@/data/files/move';
 
 type Props = {
    filePath: string;
    close: Function;
 };
 
-const CopyFileForm = ({ filePath, close }: Props) => {
+const MoveFileForm = ({ filePath, close }: Props) => {
    const user = useCurrentUser();
    const router = useRouter();
    const pathname = usePathname();
@@ -38,37 +38,26 @@ const CopyFileForm = ({ filePath, close }: Props) => {
    const [error, setError] = useState<string | undefined>('');
    const [success, setSuccess] = useState<string | undefined>('');
 
-   const form = useForm<z.infer<typeof CopyFileSchema>>({
-      resolver: zodResolver(CopyFileSchema),
+   const form = useForm<z.infer<typeof MoveFileSchema>>({
+      resolver: zodResolver(MoveFileSchema),
       defaultValues: {
          path: 'Files' + folderPath + '/',
-         name: fileName,
       },
    });
 
-   const onSubmit = async (values: z.infer<typeof CopyFileSchema>) => {
+   const onSubmit = async (values: z.infer<typeof MoveFileSchema>) => {
       if (!user) return;
 
-      let { path, name } = values;
+      let { path } = values;
       path = path.replace('Files/', user.id + '/drive/');
 
-      if (name && getFileExtension(name) !== getFileExtension(filePath)) {
-         setError(
-            'The extension of the file should be the same as the extension of the previous file (' +
-               getFileExtension(filePath) +
-               ' in this case)',
-         );
-         return;
-      }
-
-      const result = await copyFile(filePath, path + name);
+      const result = await moveFile(filePath, path);
 
       if (result.success) {
          router.refresh();
          toast({
             title: result.success,
-            description:
-               'A copy of the file ' + fileName + ' is created successfully at the specified path',
+            description: 'The ' + fileName + ' was moved to ' + path + ' successfully.',
          });
          form.reset();
          close();
@@ -103,19 +92,6 @@ const CopyFileForm = ({ filePath, close }: Props) => {
                   </FormItem>
                )}
             />
-            <FormField
-               control={form.control}
-               name="name"
-               render={({ field }) => (
-                  <FormItem className="mb-4">
-                     <FormLabel>File name</FormLabel>
-                     <FormControl>
-                        <Input spellCheck={false} placeholder={fileName} {...field} />
-                     </FormControl>
-                     <FormMessage />
-                  </FormItem>
-               )}
-            />
             <FormSuccess message={success} />
             <FormError message={error} />
             <Button type="submit">Create</Button>
@@ -124,4 +100,4 @@ const CopyFileForm = ({ filePath, close }: Props) => {
    );
 };
 
-export default CopyFileForm;
+export default MoveFileForm;

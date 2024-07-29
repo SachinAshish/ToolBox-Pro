@@ -105,7 +105,7 @@ const CopyFolderForm = ({ folderName, close }: Props) => {
                name="name"
                render={({ field }) => (
                   <FormItem className="mb-4">
-                     <FormLabel>Folder name {`(Optional)`}</FormLabel>
+                     <FormLabel>Folder name</FormLabel>
                      <FormControl>
                         <Input spellCheck={false} placeholder={folderName} {...field} />
                      </FormControl>

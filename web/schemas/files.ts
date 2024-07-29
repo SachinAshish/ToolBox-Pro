@@ -88,7 +88,7 @@ export const CopyFileSchema = z.object({
 export const CopyFolderSchema = z.object({
    path: z
       .string()
-      .min(1, { message: 'The path is required to copy the file!' })
+      .min(1, { message: 'The path is required to copy the folder!' })
       .endsWith('/', { message: 'There must be a trailing slash("/")' })
       .startsWith('Files/')
       .refine(
@@ -116,6 +116,59 @@ export const CopyFolderSchema = z.object({
          {
             message:
                'The name of the folder can contain only letters, numbers, hypens(-) and underscores(_)',
+         },
+      ),
+});
+
+export const RenameFileSchema = z.object({
+   name: z
+      .string()
+      .min(3, { message: 'File name is required!' })
+      .refine(
+         (name: string) => {
+            if (!checkFileName(name)) return false;
+            return true;
+         },
+         { message: 'Not a valid file name!' },
+      ),
+});
+
+export const MoveFileSchema = z.object({
+   path: z
+      .string()
+      .min(1, { message: 'The path is required to copy the file!' })
+      .endsWith('/', { message: 'There must be a trailing slash("/")' })
+      .startsWith('Files/')
+      .refine(
+         (path) => {
+            path = withoutTrailingSlash(path);
+            const pathArr = path.split('/');
+            for (const folder of pathArr) if (!checkFolderName(folder)) return false;
+            return true;
+         },
+         {
+            message:
+               'The name of the folders can contain only letters, numbers, hypens(-) and underscores(_)',
+         },
+      ),
+});
+
+export const MoveFolderSchema = z.object({
+   path: z
+      .string()
+      .min(1, { message: 'The path is required to copy the file!' })
+      .endsWith('/', { message: 'There must be a trailing slash("/")' })
+      .startsWith('Files/')
+      .refine(
+         (path) => {
+            path = withoutTrailingSlash(path);
+            const pathArr = path.split('/');
+            for (const folder of pathArr) if (!checkFolderName(folder)) return false;
+            return true;
+         },
+         {
+            message:
+               'The name of the folders can contain only letters, numbers, hypens(-) and underscores(_)',
          },
       ),
 });
