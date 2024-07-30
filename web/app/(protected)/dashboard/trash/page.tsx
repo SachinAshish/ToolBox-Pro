@@ -5,13 +5,10 @@ import { listContent } from '@/data/files/list';
 import { contentType } from '@/types';
 import Image from 'next/image';
 
-type Props = {
-   params: { path: string[] | undefined };
-};
+type Props = {};
 
-const FilesPage = async ({ params }: Props) => {
-   const contents = (await listContent(params.path?.join('/').replaceAll('%20', ' ') || '', 1))
-      .data;
+const TrashPage = async ({}: Props) => {
+   const contents = (await listContent('trash', 1)).data;
    const files: contentType[] = [];
    const folders: contentType[] = [];
    contents?.map((content) => {
@@ -39,15 +36,12 @@ const FilesPage = async ({ params }: Props) => {
             </>
          )}
          {!folders.length && !files.length && (
-            <div className="grid h-[500px] w-full place-items-center">
+            <div className="grid h-[600px] w-full place-items-center">
                <div className="text-md flex flex-col items-center gap-4 text-gray-500">
-                  <Image src={'/add-file.svg'} height={300} width={300} alt="no files" />
+                  <Image src={'/trash.svg'} height={300} width={300} alt="no files" />
                   <div className="text-center">
-                     <p>No file or folder found!</p>
-                     <p>
-                        <span className="font-semibold">Upload</span> a file or{' '}
-                        <span className="font-semibold">Create</span> a new folder.
-                     </p>
+                     <p>Move Items you don't need to Trash.</p>
+                     <p>Items in trash will be deleted forever after 30 days.</p>
                   </div>
                </div>
             </div>
@@ -56,4 +50,4 @@ const FilesPage = async ({ params }: Props) => {
    );
 };
 
-export default FilesPage;
+export default TrashPage;

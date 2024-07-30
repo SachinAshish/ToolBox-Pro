@@ -11,6 +11,7 @@ import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { Copy } from 'lucide-react';
 import { cn, withoutLeadingSlash, withoutTrailingSlash } from '@/lib/utils';
+import { FILES_URL } from '@/routes';
 
 type Props = {};
 
@@ -18,7 +19,7 @@ const CurrentFolderLocation = (props: Props) => {
    const [isCopied, setIsCopied] = useState(false);
 
    let pathname = usePathname();
-   let dashboardUrl = '/dashboard/files';
+   let dashboardUrl = FILES_URL;
    pathname = withoutLeadingSlash(withoutTrailingSlash(pathname.replace(dashboardUrl, '')));
    const pathArr = pathname && pathname.split('/');
 

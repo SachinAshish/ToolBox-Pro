@@ -27,3 +27,6 @@ export const apiAuthPrefix: string = '/api/auth';
  * @type {string}
  */
 export const DEFAULT_LOGIN_REDIRECT: string = '/dashboard';
+
+export const FILES_URL: string = '/dashboard/files';
+export const TRASH_URL: string = '/dashboard/trash';

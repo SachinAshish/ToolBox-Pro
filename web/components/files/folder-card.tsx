@@ -30,7 +30,7 @@ import {
    FolderArchive,
    FolderOpen,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { deleteFolder } from '@/data/files/delete';
 import { usePathname, useRouter } from 'next/navigation';
 import { useToast } from '../ui/use-toast';
@@ -52,8 +52,16 @@ const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }
    const [makeCopyOpen, setMakeCopyOpen] = useState<boolean>(false);
    const [renameOpen, setRenameOpen] = useState(false);
    const [moveOpen, setMoveOpen] = useState(false);
+   const folderName: string = getFileName(withoutTrailingSlash(openLink));
 
-   const folderName = getFileName(withoutTrailingSlash(openLink));
+   useEffect(() => {
+      const isSelected = window.location.hash;
+      if (isSelected.replace('#dir-', '').replace('%20', ' ') === folderName) {
+         const selected = document.getElementById(isSelected.substring(1));
+         selected?.classList.add('highlight');
+         selected?.scrollIntoView({ behavior: 'smooth' });
+      }
+   }, []);
 
    const onMoveToTrash = async () => {
       {
@@ -213,8 +221,9 @@ const FolderCard = ({ content }: Props) => {
    const router = useRouter();
    const pathname = usePathname();
    const { name, path } = content;
+
    return (
-      <Card className="h-full w-full cursor-pointer bg-secondary p-0">
+      <Card id={'dir-' + name} className="h-full w-full cursor-pointer bg-secondary p-0">
          <CardHeader className="w-full p-0">
             <CardTitle className="flex w-full items-start justify-between p-5">
                <Button

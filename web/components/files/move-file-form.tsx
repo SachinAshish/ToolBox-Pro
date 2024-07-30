@@ -22,6 +22,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { getFileName } from '@/lib/utils';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { moveFile } from '@/data/files/move';
+import { FILES_URL } from '@/routes';
 
 type Props = {
    filePath: string;
@@ -32,7 +33,7 @@ const MoveFileForm = ({ filePath, close }: Props) => {
    const user = useCurrentUser();
    const router = useRouter();
    const pathname = usePathname();
-   const folderPath = pathname.replace('/dashboard/files', '');
+   const folderPath = pathname.replace(FILES_URL, '');
    const fileName = getFileName(filePath);
    const { toast } = useToast();
    const [error, setError] = useState<string | undefined>('');

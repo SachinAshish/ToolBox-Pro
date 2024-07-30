@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -38,12 +37,9 @@ import { useToast } from '../ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { getFileUrl } from '@/data/files/read';
 import axios from 'axios';
-import { fileTypeFromFile } from 'file-type';
 import { contentType } from '@/types';
 import FileIcon from './file-icon';
 import FileThumbnail from './file-thumbnail';
-import { BarLoader } from 'react-spinners';
-import Link from 'next/link';
 import DialogWrapper from '../dialog-wrapper';
 import CopyFileForm from './copy-file-form';
 import { getFileName } from '@/lib/utils';
@@ -58,8 +54,16 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
    const [makeCopyOpen, setMakeCopyOpen] = useState(false);
    const [renameOpen, setRenameOpen] = useState(false);
    const [moveOpen, setMoveOpen] = useState(false);
-
    const fileName = getFileName(filePath);
+
+   useEffect(() => {
+      const isSelected = window.location.hash;
+      if (isSelected.replace('#file-', '').replace('%20', ' ') === fileName) {
+         const selected = document.getElementById(isSelected.substring(1));
+         selected?.classList.add('highlight');
+         selected?.scrollIntoView({ behavior: 'smooth' });
+      }
+   }, []);
 
    const onMoveToTrash = async () => {
       {
@@ -230,13 +234,21 @@ type Props = { content: contentType };
 const FileCard = ({ content }: Props) => {
    const [fileUrl, setFileUrl] = useState<string>('');
    const { name, path, type } = content;
+   const { toast } = useToast();
 
    async function getFileLink() {
       let url = await getFileUrl(path);
 
+      if (!url.url) {
+         toast({
+            title: url.error,
+            description: 'This file could not be fetched due to and internal error.',
+         });
+         return;
+      }
       // For local hosting/development only
-      url = url.url?.replace('object_store', 'localhost');
-      const response = await axios.get(url, { responseType: 'arraybuffer' });
+      const downloadUrl = url.url.replace('object_store', 'localhost');
+      const response = await axios.get(downloadUrl, { responseType: 'arraybuffer' });
 
       const buffer = response.data;
       const blob = new Blob([buffer]);
@@ -244,11 +256,16 @@ const FileCard = ({ content }: Props) => {
 
       setFileUrl(imageUrl);
    }
+
    useEffect(() => {
       getFileLink();
    }, []);
+
    return (
-      <Card className="group flex h-full w-full cursor-pointer flex-col overflow-hidden bg-secondary p-0">
+      <Card
+         id={'file-' + name.replace(' ', '%20')}
+         className="group flex h-full w-full cursor-pointer flex-col overflow-hidden bg-secondary p-0"
+      >
          <CardHeader className="w-full p-5">
             <CardTitle className="flex max-w-full items-start justify-between">
                <Button
@@ -273,7 +290,7 @@ const FileCard = ({ content }: Props) => {
          <CardContent className="h-full w-full p-4 pt-0">
             <div className="aspect-[13/9] h-full w-full overflow-hidden rounded-lg bg-gray-300 p-0 group-hover:brightness-90 group-active:brightness-100 dark:bg-slate-500">
                {fileUrl ? (
-                  <FileThumbnail fileUrl={fileUrl} fileType={type} />
+                  <FileThumbnail fileUrl={fileUrl} fileType={type || 'default'} />
                ) : (
                   <div className="grid h-full w-full place-items-center">
                      <Loader2 className="h-8 w-8 animate-spin text-secondary-foreground opacity-50" />

@@ -21,7 +21,13 @@ export const getFileUrlNoAuth = async (key: string) => {
    }
 };
 
-export const getFileUrl = async (path: string) => {
+export const getFileUrl = async (
+   path: string,
+): Promise<{
+   success?: string;
+   error?: string;
+   url?: string;
+}> => {
    let user: User;
    const verification = await verifyCurrentUser();
    if (!verification.success) return { error: verification.error };

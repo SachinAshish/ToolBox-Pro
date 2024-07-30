@@ -21,7 +21,8 @@ import { useToast } from '../ui/use-toast';
 import { useRouter, usePathname } from 'next/navigation';
 import { getFileName, withoutTrailingSlash } from '@/lib/utils';
 import { useCurrentUser } from '@/hooks/use-current-user';
-import { moveFile, moveFolder } from '@/data/files/move';
+import { moveFolder } from '@/data/files/move';
+import { FILES_URL } from '@/routes';
 
 type Props = {
    folderPath: string;
@@ -40,7 +41,7 @@ const MoveFolderForm = ({ folderPath, close }: Props) => {
    const form = useForm<z.infer<typeof MoveFileSchema>>({
       resolver: zodResolver(MoveFileSchema),
       defaultValues: {
-         path: 'Files' + pathname.replace('/dashboard/files', '') + '/',
+         path: 'Files' + pathname.replace(FILES_URL, '') + '/',
       },
    });
 

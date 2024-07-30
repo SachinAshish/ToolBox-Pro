@@ -22,6 +22,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { copyFolder } from '@/data/files/copy';
 import { withLeadingSlash, withTrailingSlash } from '@/lib/utils';
 import { useCurrentUser } from '@/hooks/use-current-user';
+import { FILES_URL } from '@/routes';
 
 type Props = {
    folderName: string;
@@ -33,7 +34,7 @@ const CopyFolderForm = ({ folderName, close }: Props) => {
    const router = useRouter();
    const pathname = usePathname();
 
-   const folderPath = pathname.replace('/dashboard/files', '');
+   const folderPath = pathname.replace(FILES_URL, '');
 
    const { toast } = useToast();
    const [error, setError] = useState<string | undefined>('');

@@ -20,13 +20,14 @@ import { Input } from '../ui/input';
 import { createFolder } from '@/data/files/create';
 import { useToast } from '../ui/use-toast';
 import { usePathname, useRouter } from 'next/navigation';
+import { FILES_URL } from '@/routes';
 
 type Props = {};
 
 const FolderForm = (props: Props) => {
    const router = useRouter();
    const pathname = usePathname();
-   const folderPath = pathname.replace('/dashboard/files', '');
+   const folderPath = pathname.replace(FILES_URL, '');
    const { toast } = useToast();
    const [error, setError] = useState<string | undefined>('');
    const [success, setSuccess] = useState<string | undefined>('');
@@ -51,9 +52,7 @@ const FolderForm = (props: Props) => {
          });
          form.reset();
       }
-
       setError(result.error);
-      setSuccess(result.success);
    };
 
    return (

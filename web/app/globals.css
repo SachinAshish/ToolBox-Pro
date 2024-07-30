@@ -8,6 +8,10 @@ body,
    height: 100%;
 }
 
+.highlight {
+   @apply animate-wiggle delay-150 repeat-[3];
+}
+
 @layer base {
    :root {
       --background: 0 0% 100%;

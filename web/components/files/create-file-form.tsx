@@ -15,13 +15,14 @@ import { useState, useTransition } from 'react';
 import { uploadFile } from '@/data/files/create';
 import { useToast } from '../ui/use-toast';
 import { usePathname, useRouter } from 'next/navigation';
+import { FILES_URL } from '@/routes';
 
 type Props = {};
 
 const FileForm = (props: Props) => {
    const router = useRouter();
    const pathname = usePathname();
-   const folderPath = pathname.replace('/dashboard/files', '');
+   const folderPath = pathname.replace(FILES_URL, '');
    const [error, setError] = useState<string | undefined>('');
    const [success, setSuccess] = useState<string | undefined>('');
    const [isPending, startTransition] = useTransition();

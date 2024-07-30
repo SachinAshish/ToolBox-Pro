@@ -7,7 +7,7 @@ type Props = {};
 const DashboardPage = async (props: Props) => {
    const session = await currentUser();
    return (
-      <div>
+      <div className="container">
          <h1>This is the dashboard page</h1>
          <pre className="w-[500px] border-2 border-black bg-gray-300 p-4">
             {JSON.stringify(session, null, 3)}

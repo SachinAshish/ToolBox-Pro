@@ -14,6 +14,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { LogoutButton } from '@/components/auth/logout-button';
 import Link from 'next/link';
 import { CreditCard, LogOut, Settings, User, File, LayoutDashboard } from 'lucide-react';
+import { FILES_URL } from '@/routes';
 
 export const UserButton = () => {
    const user = useCurrentUser();
@@ -21,9 +22,9 @@ export const UserButton = () => {
    return (
       <DropdownMenu>
          <DropdownMenuTrigger className="focus:outline-none">
-            <Avatar className="outline outline-1 outline-accent-foreground/20">
+            <Avatar className="border rounded-lg">
                <AvatarImage src={user?.image || undefined} />
-               <AvatarFallback className="bg-neutral-700 text-white">
+               <AvatarFallback className="bg-neutral-700 text-white rounded-lg">
                   <User />
                </AvatarFallback>
             </Avatar>
@@ -47,7 +48,7 @@ export const UserButton = () => {
                   <Settings className="mr-2 h-4 w-4" />
                   Settings
                </DropdownMenuItem>
-               <Link href={'/dashboard/files'}>
+               <Link href={FILES_URL}>
                   <DropdownMenuItem>
                      <File className="mr-2 h-4 w-4" />
                      Files

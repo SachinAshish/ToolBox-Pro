@@ -10,7 +10,12 @@ import { User } from '@prisma/client';
 import mime from 'mime-types';
 import { withTrailingSlash } from '@/lib/utils';
 
-export const createFolderNoAuth = async (path: string) => {
+export const createFolderNoAuth = async (
+   path: string,
+): Promise<{
+   success?: string;
+   error?: string;
+}> => {
    const folders = await listFoldersNoAuth(path);
    if (folders?.length) return { error: 'A folder with this name already exists!' };
 
