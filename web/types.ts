@@ -4,8 +4,8 @@ export type contentType = {
    name: string;
    type: string | false;
    path: string;
-   modified: Date;
-   size: number;
+   modified: string;
+   size: string;
 };
 
 export type sidebarButtonType = {

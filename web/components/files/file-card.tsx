@@ -47,6 +47,8 @@ import RenameFileForm from './rename-file-form';
 import MoveFileForm from './move-file-form';
 import { moveFileToTrash } from '@/data/files/trash';
 import { format } from 'date-fns';
+import { getDateString } from '@/lib/files/get-date';
+import { getFileSize } from '@/lib/files/get-size';
 
 const FileCardAction = ({ filePath }: { filePath: string }) => {
    const router = useRouter();
@@ -285,8 +287,8 @@ const FileCard = ({ content }: Props) => {
                <FileCardAction filePath={path} />
             </CardTitle>
             <div className="text-xs text-muted-foreground">
-               <p>Last Modified: {format(new Date(modified), 'dd-MM-yyyy')}</p>
-               <p>Size: {Math.round(size * 10) / 10}Kb</p>
+               <p>Last Modified: {modified}</p>
+               <p>Size: {size}</p>
             </div>
          </CardHeader>
          <CardContent className="h-full w-full p-4 pt-0">

@@ -8,6 +8,8 @@ import mime from 'mime-types';
 import { contentType } from '@/types';
 import { withoutTrailingSlash } from '@/lib/utils';
 import { parseTrashName } from '@/lib/files/parse-name';
+import { getDateString } from '@/lib/files/get-date';
+import { getFileSize } from '@/lib/files/get-size';
 
 export const listFilesNoAuth = async (path: string) => {
    const command = new ListObjectsV2Command({
@@ -102,8 +104,8 @@ export const listContentNoAuth = async (path: string) => {
          type: '',
          name: '',
          path: '',
-         modified,
-         size,
+         modified: getDateString(modified),
+         size: getFileSize(size),
       };
       if (isFolder) {
          details.type = 'directory';
