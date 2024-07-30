@@ -1,13 +1,11 @@
 'use server';
 
-import { moveFileNoAuth, moveFolderNoAuth } from './move';
 import { User } from '@prisma/client';
 import { verifyCurrentUser } from '@/lib/auth/verify';
 import { getFileExtension, getFileName, getFilePath, withoutTrailingSlash } from '@/lib/utils';
 import { copyFolderNoAuth, copyObjectNoAuth } from './copy';
 import { deleteFileNoAuth, deleteFolderNoAuth } from './delete';
-
-const slashReplace = '{{:splash:}}';
+import { slashReplace, trashDetailsSeparator } from '@/constants';
 
 export const moveFileToTrash = async (path: string) => {
    let user: User;
@@ -25,11 +23,12 @@ export const moveFileToTrash = async (path: string) => {
       trashPath +
       (
          fileName +
-         '-trash-' +
-         '{filePath:"' +
+         '-' +
+         trashDetailsSeparator +
+         '-' +
+         '{"filePath":"' +
          getFilePath(path) +
-         '",time:' +
-         new Date().getTime() +
+         '"' +
          '}'
       ).replaceAll('/', slashReplace) +
       getFileExtension(path);
@@ -58,11 +57,12 @@ export const moveFolderToTrash = async (path: string) => {
       trashPath +
       (
          getFileName(withoutTrailingSlash(path)) +
-         '-trash-' +
-         '{filePath:"' +
+         '-' +
+         trashDetailsSeparator +
+         '-' +
+         '{"filePath":"' +
          getFilePath(withoutTrailingSlash(path)) +
-         '",time:' +
-         new Date().getTime() +
+         '"' +
          '}'
       ).replaceAll('/', slashReplace) +
       '/';

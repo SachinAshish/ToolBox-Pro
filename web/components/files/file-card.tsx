@@ -46,6 +46,7 @@ import { getFileName } from '@/lib/utils';
 import RenameFileForm from './rename-file-form';
 import MoveFileForm from './move-file-form';
 import { moveFileToTrash } from '@/data/files/trash';
+import { format } from 'date-fns';
 
 const FileCardAction = ({ filePath }: { filePath: string }) => {
    const router = useRouter();
@@ -67,9 +68,6 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
 
    const onMoveToTrash = async () => {
       {
-         toast({
-            title: 'Moving a file to trash',
-         });
          const result = await moveFileToTrash(filePath);
          if (result.success) {
             toast({
@@ -233,7 +231,7 @@ type Props = { content: contentType };
 
 const FileCard = ({ content }: Props) => {
    const [fileUrl, setFileUrl] = useState<string>('');
-   const { name, path, type } = content;
+   const { name, path, type, modified, size } = content;
    const { toast } = useToast();
 
    async function getFileLink() {
@@ -286,6 +284,10 @@ const FileCard = ({ content }: Props) => {
                </Button>
                <FileCardAction filePath={path} />
             </CardTitle>
+            <div className="text-xs text-muted-foreground">
+               <p>Last Modified: {format(new Date(modified), 'dd-MM-yyyy')}</p>
+               <p>Size: {Math.round(size * 10) / 10}Kb</p>
+            </div>
          </CardHeader>
          <CardContent className="h-full w-full p-4 pt-0">
             <div className="aspect-[13/9] h-full w-full overflow-hidden rounded-lg bg-gray-300 p-0 group-hover:brightness-90 group-active:brightness-100 dark:bg-slate-500">

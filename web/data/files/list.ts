@@ -6,6 +6,8 @@ import { verifyCurrentUser } from '@/lib/auth/verify';
 import { User } from '@prisma/client';
 import mime from 'mime-types';
 import { contentType } from '@/types';
+import { withoutTrailingSlash } from '@/lib/utils';
+import { parseTrashName } from '@/lib/files/parse-name';
 
 export const listFilesNoAuth = async (path: string) => {
    const command = new ListObjectsV2Command({
@@ -86,15 +88,22 @@ export const listContentNoAuth = async (path: string) => {
    });
 
    const data = await s3Client.send(command);
-   const contents = data.Contents?.map((content) => content.Key!.replaceAll('//', '/')) || [];
+   const contents =
+      data.Contents?.map((content) => ({
+         key: content.Key!.replaceAll('//', '/'),
+         modified: content.LastModified || new Date(),
+         size: (content.Size || 0) / 1000,
+      })) || [];
    const content_details: contentType[] = [];
-   for (const contentPath of contents) {
+   for (const { key: contentPath, modified, size } of contents) {
       if (contentPath === path + '/') continue;
       const isFolder = contentPath.endsWith('/');
       let details: contentType = {
          type: '',
          name: '',
          path: '',
+         modified,
+         size,
       };
       if (isFolder) {
          details.type = 'directory';
@@ -138,6 +147,48 @@ export const listContent = async (path: string, depth?: number) => {
             return false;
          });
       return {
+         success: 'No error ocurred during reading',
+         data: contents || [],
+      };
+   } catch (err) {
+      console.error('Error listing files', err);
+      return { error: 'Error listing files!' };
+   }
+};
+
+export const listTrashContent = async () => {
+   let user: User;
+   const verification = await verifyCurrentUser();
+   if (!verification.success) return { error: verification.error };
+   else if (verification.data) user = verification.data;
+   else
+      return {
+         error: 'Something unexpected happened! Please report it <a href="https://github.com/ArjunVarshney/ToolBox-Pro/issues">here</a>',
+      };
+
+   const trash_path = user.id + '/' + 'trash';
+
+   try {
+      let contents = await listContentNoAuth(trash_path);
+
+      contents = contents.filter((content) => {
+         let { path } = content;
+         path = withoutTrailingSlash(path);
+
+         const pathArr = path.split('/');
+
+         if (pathArr.length === 3) return true;
+         return false;
+      });
+
+      contents = contents.map((content) => {
+         let { name, type } = content;
+         const details = parseTrashName(name, type === 'directory');
+         return { ...content, ...details };
+      });
+
+      return {
+         success: 'No error ocurred during reading',
          data: contents || [],
       };
    } catch (err) {

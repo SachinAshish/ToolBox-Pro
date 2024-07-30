@@ -1,6 +1,7 @@
 import { IoMdImage } from 'react-icons/io';
 import { RiClapperboardFill } from 'react-icons/ri';
 import { FaFile, FaFolder } from 'react-icons/fa6';
+import { IoEyeOff } from 'react-icons/io5';
 import { cn } from '@/lib/utils';
 
 type Props = {
@@ -14,6 +15,7 @@ const FileIcon = ({ mime, className = '' }: Props) => {
       video: <RiClapperboardFill className={cn(className, 'text-purple-400')} />,
       directory: <FaFolder className="h-5 w-5 text-gray-500 dark:text-gray-400" />,
       file: <FaFile className={cn(className, 'text-blue-400')} />,
+      'no-preview': <IoEyeOff className={cn(className, 'text-primary')} />,
    };
 
    for (const str in iconMap) if (mime && mime.includes(str)) return iconMap[str];

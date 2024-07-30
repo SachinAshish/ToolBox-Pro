@@ -65,9 +65,6 @@ const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }
 
    const onMoveToTrash = async () => {
       {
-         toast({
-            title: 'Moving a file to trash',
-         });
          const result = await moveFolderToTrash(path);
          if (result.success) {
             toast({
@@ -232,9 +229,9 @@ const FolderCard = ({ content }: Props) => {
                   onClick={() => {
                      router.push(pathname + '/' + name);
                   }}
-                  className="w-full px-0"
+                  className="w-[90%] px-0"
                >
-                  <div className="flex h-5 w-full items-center gap-2">
+                  <div className="flex h-5 max-w-full items-center gap-2">
                      <FaFolder className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                      <span className="w-[90%] truncate text-ellipsis text-nowrap text-sm">
                         {name}

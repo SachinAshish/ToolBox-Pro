@@ -1,9 +1,11 @@
-import { MouseEventHandler } from "react";
+import { MouseEventHandler } from 'react';
 
 export type contentType = {
    name: string;
    type: string | false;
    path: string;
+   modified: Date;
+   size: number;
 };
 
 export type sidebarButtonType = {
