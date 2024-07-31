@@ -46,9 +46,7 @@ import { getFileName } from '@/lib/utils';
 import RenameFileForm from './rename-file-form';
 import MoveFileForm from './move-file-form';
 import { moveFileToTrash } from '@/data/files/trash';
-import { format } from 'date-fns';
-import { getDateString } from '@/lib/files/get-date';
-import { getFileSize } from '@/lib/files/get-size';
+import { useHash } from '@/hooks/use-hash';
 
 const FileCardAction = ({ filePath }: { filePath: string }) => {
    const router = useRouter();
@@ -58,15 +56,6 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
    const [renameOpen, setRenameOpen] = useState(false);
    const [moveOpen, setMoveOpen] = useState(false);
    const fileName = getFileName(filePath);
-
-   useEffect(() => {
-      const isSelected = window.location.hash;
-      if (isSelected.replace('#file-', '').replace('%20', ' ') === fileName) {
-         const selected = document.getElementById(isSelected.substring(1));
-         selected?.classList.add('highlight');
-         selected?.scrollIntoView({ behavior: 'smooth' });
-      }
-   }, []);
 
    const onMoveToTrash = async () => {
       {
@@ -236,6 +225,15 @@ const FileCard = ({ content }: Props) => {
    const { name, path, type, modified, size } = content;
    const { toast } = useToast();
 
+   const hash = useHash();
+   useEffect(() => {
+      if (hash.replace('#file-', '').replace('%20', ' ') === name) {
+         const selected = document.getElementById(hash.substring(1));
+         selected?.classList.add('highlight');
+         selected?.scrollIntoView({ behavior: 'smooth' });
+      }
+   }, [hash]);
+
    async function getFileLink() {
       let url = await getFileUrl(path);
 
@@ -266,7 +264,7 @@ const FileCard = ({ content }: Props) => {
          id={'file-' + name.replace(' ', '%20')}
          className="group flex h-full w-full cursor-pointer flex-col overflow-hidden bg-secondary p-0"
       >
-         <CardHeader className="w-full p-5">
+         <CardHeader className="w-full p-5 pb-2">
             <CardTitle className="flex max-w-full items-start justify-between">
                <Button
                   variant={'link'}
@@ -286,7 +284,7 @@ const FileCard = ({ content }: Props) => {
                </Button>
                <FileCardAction filePath={path} />
             </CardTitle>
-            <div className="text-xs text-muted-foreground">
+            <div className="flex flex-col gap-0.5 text-xs text-muted-foreground">
                <p>Last Modified: {modified}</p>
                <p>Size: {size}</p>
             </div>

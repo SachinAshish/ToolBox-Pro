@@ -1,7 +1,7 @@
 import TrashFileCard from '@/components/files/trash/trash-file-card';
 import TrashFolderCard from '@/components/files/trash/trash-folder-card';
 import { Separator } from '@/components/ui/separator';
-import { listTrashContent } from '@/data/files/list';
+import { listTrashContent } from '@/data/files/trash';
 import { contentType } from '@/types';
 import Image from 'next/image';
 

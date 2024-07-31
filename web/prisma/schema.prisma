@@ -67,6 +67,7 @@ model User {
   password              String?
   role                  UserRole               @default(USER)
   accounts              Account[]
+  trash                 TrashFileAndFolder[]
   isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
 }
@@ -77,4 +78,12 @@ model TwoFactorConfirmation {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
+}
+
+model TrashFileAndFolder {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String @db.ObjectId
+  originalPath String
+  trashPath    String
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

@@ -44,6 +44,7 @@ import { getFileName, withoutTrailingSlash } from '@/lib/utils';
 import RenameFolderForm from './rename-folder-form';
 import MoveFolderForm from './move-folder-form';
 import { moveFolderToTrash } from '@/data/files/trash';
+import { useHash } from '@/hooks/use-hash';
 
 const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }) => {
    const { toast } = useToast();
@@ -219,10 +220,19 @@ const FolderCard = ({ content }: Props) => {
    const pathname = usePathname();
    const { name, path } = content;
 
+   const hash = useHash();
+   useEffect(() => {
+      if (hash.replace('#dir-', '').replace('%20', ' ') === name) {
+         const selected = document.getElementById(hash.substring(1));
+         selected?.classList.add('highlight');
+         selected?.scrollIntoView({ behavior: 'smooth' });
+      }
+   }, [hash]);
+
    return (
       <Card id={'dir-' + name} className="h-full w-full cursor-pointer bg-secondary p-0">
-         <CardHeader className="w-full p-0">
-            <CardTitle className="flex w-full items-start justify-between p-5">
+         <CardHeader className="w-full p-5">
+            <CardTitle className="flex w-full items-start justify-between p-0">
                <Button
                   variant={'link'}
                   asChild

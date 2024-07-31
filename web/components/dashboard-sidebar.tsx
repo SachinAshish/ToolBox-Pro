@@ -17,11 +17,6 @@ const DashboardSideBar = (props: Props) => {
          onClick: () => router.push(FILES_URL),
       },
       {
-         icon: <Star className="h-5 w-5" />,
-         title: 'Starred',
-         onClick: () => {},
-      },
-      {
          icon: <Trash className="h-5 w-5" />,
          title: 'Trash',
          onClick: () => router.push(TRASH_URL),

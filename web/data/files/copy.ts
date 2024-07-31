@@ -14,8 +14,9 @@ export const copyObjectNoAuth = async (
    directObject?: boolean,
 ): Promise<{ error?: string; success?: string }> => {
    // check if the file already exists
+
    const files = await listFilesNoAuth(destPath);
-   if (files) return { error: 'A file with this name already exists!' };
+   if (files) return { error: 'A file with this name already exists on the given path!' };
 
    // check if the folders exists, if not create it
    if (!directObject) {
@@ -27,7 +28,7 @@ export const copyObjectNoAuth = async (
          await createFolderNoAuth(existingFolderPath);
       }
    }
-   
+
    const command = new CopyObjectCommand({
       CopySource: 'data/' + path,
       Bucket: 'data',
@@ -87,7 +88,10 @@ export const copyFolderNoAuth = async (
       const destinationFile = destinationFileNames[i];
 
       const res = await copyObjectNoAuth(sourceFile, destinationFile);
-      if (res.error) f = 1;
+      if (res.error) {
+         f = 1;
+         console.log(sourceFile, res.error);
+      }
    }
    return f
       ? { error: 'Something went wrong! All of the files in the folder have not been copied' }

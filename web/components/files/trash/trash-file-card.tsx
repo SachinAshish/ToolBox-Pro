@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import {
    DropdownMenu,
    DropdownMenuContent,
@@ -25,47 +25,58 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import FileIcon from '../file-icon';
-import FileThumbnail from '../file-thumbnail';
-import { getDateString } from '@/lib/files/get-date';
-import { getFileSize } from '@/lib/files/get-size';
+import { useHash } from '@/hooks/use-hash';
+import { deleteFileFromTrash, restoreFileFromTrash } from '@/data/files/trash';
 
-const FileCardAction = ({ name }: { name: string }) => {
+const FileCardAction = ({
+   deletePath,
+   restorePath,
+}: {
+   deletePath: string;
+   restorePath: string;
+}) => {
    const router = useRouter();
    const { toast } = useToast();
    const [deleteOpen, setDeleteOpen] = useState(false);
 
-   useEffect(() => {
-      const isSelected = window.location.hash;
-      if (isSelected.replace('#file-', '').replace('%20', ' ') === name) {
-         const selected = document.getElementById(isSelected.substring(1));
-         selected?.classList.add('highlight');
-         selected?.scrollIntoView({ behavior: 'smooth' });
-      }
-   }, []);
-
    const onDelete = async () => {
-      {
-         setDeleteOpen(false);
-         // toast({
-         //    title: 'Deleting a file',
-         // });
-         // const result = await deleteFile(filePath);
-         // if (result.success) {
-         //    toast({
-         //       title: result.success,
-         //       description: '1 file was permanently deleted from Your Files.',
-         //    });
-         //    router.refresh();
-         // } else if (result.error) {
-         //    toast({
-         //       title: 'Could not delete file!',
-         //       description: result.error,
-         //    });
-         // } else {
-         //    toast({
-         //       title: 'Network error',
-         //    });
-         // }
+      setDeleteOpen(false);
+      const result = await deleteFileFromTrash(deletePath);
+      if (result.success) {
+         toast({
+            title: result.success,
+            description: '1 file was permanently deleted from Trash.',
+         });
+         router.refresh();
+      } else if (result.error) {
+         toast({
+            title: 'Could not delete file!',
+            description: result.error,
+         });
+      } else {
+         toast({
+            title: 'Network error',
+         });
+      }
+   };
+
+   const onRestore = async () => {
+      const result = await restoreFileFromTrash(deletePath, restorePath);
+      if (result.success) {
+         toast({
+            title: result.success,
+            description: '1 file was restored from Trash.',
+         });
+         router.refresh();
+      } else if (result.error) {
+         toast({
+            title: 'Could not delete file!',
+            description: result.error,
+         });
+      } else {
+         toast({
+            title: 'Network error',
+         });
       }
    };
 
@@ -93,7 +104,7 @@ const FileCardAction = ({ name }: { name: string }) => {
             </DropdownMenuTrigger>
             <DropdownMenuSeparator />
             <DropdownMenuContent className="w-40" align="start">
-               <DropdownMenuItem onClick={() => {}}>
+               <DropdownMenuItem onClick={onRestore}>
                   <ArchiveRestore className="mr-2 h-4 w-4" />
                   Restore
                </DropdownMenuItem>
@@ -112,8 +123,21 @@ const FileCardAction = ({ name }: { name: string }) => {
 
 type Props = { content: any };
 
-const FileCard = ({ content }: Props) => {
-   const { name, type, modified, filePath: restorePath, size } = content;
+const TrashFileCard = ({ content }: Props) => {
+   const { name, type, path, modified, filePath: restorePath, size } = content;
+
+   const deletedFrom =
+      'File' +
+      restorePath.substring(restorePath.indexOf('drive/') + 6, restorePath.lastIndexOf('/'));
+
+   const hash = useHash();
+   useEffect(() => {
+      if (hash.replace('#file-', '').replace('%20', ' ') === name) {
+         const selected = document.getElementById(hash.substring(1));
+         selected?.classList.add('highlight');
+         selected?.scrollIntoView({ behavior: 'smooth' });
+      }
+   }, [hash]);
 
    return (
       <Card
@@ -122,7 +146,7 @@ const FileCard = ({ content }: Props) => {
       >
          <CardHeader className="w-full p-5">
             <CardTitle className="flex max-w-full items-start justify-between">
-               <Button variant={'link'} asChild className="w-full p-0 hover:no-underline">
+               <Button variant={'link'} asChild className="w-full p-0 hover:no-underline" disabled>
                   <div className="flex h-5 max-w-[90%] flex-grow items-center justify-between gap-2">
                      <FileIcon mime={type} className="min-h-5 min-w-5" />
                      <span className="w-[90%] flex-grow truncate text-ellipsis text-nowrap text-sm">
@@ -130,20 +154,16 @@ const FileCard = ({ content }: Props) => {
                      </span>
                   </div>
                </Button>
-               <FileCardAction name={name} />
+               <FileCardAction deletePath={path} restorePath={restorePath} />
             </CardTitle>
-            <div className="text-xs text-muted-foreground">
-               <p>Last Modified: {modified}</p>
+            <div className="flex flex-col gap-0.5 text-xs text-muted-foreground">
+               <p>Deleted from: {deletedFrom}</p>
+               <p>Deleted: {modified}</p>
                <p>Size: {size}</p>
             </div>
          </CardHeader>
-         <CardContent className="h-full w-full p-4 pt-0">
-            <div className="aspect-[13/9] h-full w-full overflow-hidden rounded-lg bg-gray-300 p-0 group-hover:brightness-90 group-active:brightness-100 dark:bg-slate-500">
-               <FileThumbnail fileUrl={'no-url'} fileType={'no-preview'} />
-            </div>
-         </CardContent>
       </Card>
    );
 };
 
-export default FileCard;
+export default TrashFileCard;

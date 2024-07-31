@@ -12,13 +12,13 @@ import {
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Loader2, Search } from 'lucide-react';
-import { searchObjects } from '@/data/files/search';
+import { searchObjects, searchTrashObjects } from '@/data/files/search';
 import { contentType } from '@/types';
 import FileIcon from './files/file-icon';
 import { getFilePath, withoutTrailingSlash } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { DialogTitle } from './ui/dialog';
-import { FILES_URL } from '@/routes';
+import { FILES_URL, TRASH_URL } from '@/routes';
 
 function SearchBar() {
    const router = useRouter();
@@ -26,8 +26,12 @@ function SearchBar() {
    const [inputValue, setInputValue] = useState('');
    const [isPending, startTransition] = useTransition();
    const [search, setSearch] = useState('');
-   const [searchResults, setSearchResults] = useState<{ files: contentType[] }>({
+   const [searchResults, setSearchResults] = useState<{
+      files: contentType[];
+      trash: contentType[];
+   }>({
       files: [],
+      trash: [],
    });
 
    useEffect(() => {
@@ -50,14 +54,29 @@ function SearchBar() {
    }, [inputValue]);
 
    useEffect(() => {
-      searchFiles(search);
+      searchFiles();
+      searchTrash();
    }, [search]);
 
-   const searchFiles = (key: string) => {
-      if (!key) return;
+   const searchFiles = () => {
+      if (!search) {
+         setSearchResults((prev) => ({ ...prev, files: [] }));
+         return;
+      }
       startTransition(async () => {
-         const searchResults = await searchObjects(key);
-         if (searchResults.success) setSearchResults({ files: searchResults.data });
+         const searchRes = await searchObjects(search);
+         if (searchRes.success) setSearchResults((prev) => ({ ...prev, files: searchRes.data }));
+      });
+   };
+
+   const searchTrash = () => {
+      if (!search) {
+         setSearchResults((prev) => ({ ...prev, trash: [] }));
+         return;
+      }
+      startTransition(async () => {
+         const searchRes = await searchTrashObjects(search);
+         if (searchRes.success) setSearchResults((prev) => ({ ...prev, trash: searchRes.data }));
       });
    };
 
@@ -109,6 +128,39 @@ function SearchBar() {
                                  </div>
                                  <span className="w-[40%] truncate text-ellipsis text-nowrap text-xs text-muted-foreground">
                                     {path}
+                                 </span>
+                              </div>
+                           </CommandItem>
+                        ),
+                     )}
+                  </CommandGroup>
+               )}
+               {searchResults.trash.length !== 0 && (
+                  <CommandGroup heading="Trash">
+                     {searchResults.trash.map(
+                        ({ type, name, path }: contentType, index: number) => (
+                           <CommandItem
+                              key={index}
+                              onSelect={() => {
+                                 const contentPath = withoutTrailingSlash(
+                                    getFilePath(withoutTrailingSlash(path.replace('Trash', ''))),
+                                 );
+                                 const contentId =
+                                    (type === 'directory' ? 'dir' : 'file') + '-' + name;
+                                 const folderLink = TRASH_URL + contentPath + '#' + contentId;
+                                 router.push(folderLink);
+                                 setOpen(false);
+                              }}
+                           >
+                              <div className="flex w-full items-center justify-between">
+                                 <div className="flex w-[70%] gap-2">
+                                    <FileIcon mime={type || 'file'} />{' '}
+                                    <span className="w-[85%] truncate text-ellipsis text-nowrap">
+                                       {name}
+                                    </span>
+                                 </div>
+                                 <span className="w-[40%] truncate text-ellipsis text-nowrap text-xs text-muted-foreground">
+                                    {'Trash/' + name}
                                  </span>
                               </div>
                            </CommandItem>

@@ -6,15 +6,14 @@ import { verifyCurrentUser } from '@/lib/auth/verify';
 import { User } from '@prisma/client';
 import mime from 'mime-types';
 import { contentType } from '@/types';
-import { withoutTrailingSlash } from '@/lib/utils';
-import { parseTrashName } from '@/lib/files/parse-name';
 import { getDateString } from '@/lib/files/get-date';
 import { getFileSize } from '@/lib/files/get-size';
+import { withTrailingSlash } from '@/lib/utils';
 
 export const listFilesNoAuth = async (path: string) => {
    const command = new ListObjectsV2Command({
       Bucket: 'data',
-      Prefix: path.endsWith('/') ? path.slice(0, -1) : path,
+      Prefix: withTrailingSlash(path),
    });
    const data = await s3Client.send(command);
    const fileNames = data.Contents?.filter((content: any) => !content.Key!.endsWith('/')).map(
@@ -50,7 +49,7 @@ export const listFiles = async (path: string) => {
 export const listFoldersNoAuth = async (path: string) => {
    const command = new ListObjectsV2Command({
       Bucket: 'data',
-      Prefix: path.endsWith('/') ? path.slice(0, -1) : path,
+      Prefix: withTrailingSlash(path),
       Delimiter: '/',
    });
    const data = await s3Client.send(command);
@@ -83,7 +82,7 @@ export const listFolders = async (path: string) => {
 };
 
 export const listContentNoAuth = async (path: string) => {
-   path = path.endsWith('/') ? path.slice(0, -1) : path;
+   path = withTrailingSlash(path);
    const command = new ListObjectsV2Command({
       Bucket: 'data',
       Prefix: path,
@@ -148,47 +147,6 @@ export const listContent = async (path: string, depth?: number) => {
             if (pathArr.length === folderPathArr.length + depth - 1) return true;
             return false;
          });
-      return {
-         success: 'No error ocurred during reading',
-         data: contents || [],
-      };
-   } catch (err) {
-      console.error('Error listing files', err);
-      return { error: 'Error listing files!' };
-   }
-};
-
-export const listTrashContent = async () => {
-   let user: User;
-   const verification = await verifyCurrentUser();
-   if (!verification.success) return { error: verification.error };
-   else if (verification.data) user = verification.data;
-   else
-      return {
-         error: 'Something unexpected happened! Please report it <a href="https://github.com/ArjunVarshney/ToolBox-Pro/issues">here</a>',
-      };
-
-   const trash_path = user.id + '/' + 'trash';
-
-   try {
-      let contents = await listContentNoAuth(trash_path);
-
-      contents = contents.filter((content) => {
-         let { path } = content;
-         path = withoutTrailingSlash(path);
-
-         const pathArr = path.split('/');
-
-         if (pathArr.length === 3) return true;
-         return false;
-      });
-
-      contents = contents.map((content) => {
-         let { name, type } = content;
-         const details = parseTrashName(name, type === 'directory');
-         return { ...content, ...details };
-      });
-
       return {
          success: 'No error ocurred during reading',
          data: contents || [],

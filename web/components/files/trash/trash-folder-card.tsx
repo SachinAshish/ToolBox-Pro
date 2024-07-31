@@ -22,43 +22,65 @@ import { FaFolder } from 'react-icons/fa';
 import { MoreVertical, FileX, ArchiveRestore } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { contentType } from '@/types';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { useHash } from '@/hooks/use-hash';
+import { deleteFolderFromTrash, restoreFolderFromTrash } from '@/data/files/trash';
+import { withoutTrailingSlash } from '@/lib/utils';
 
-const TrashFolderCardAction = ({ name }: { name: string }) => {
+const TrashFolderCardAction = ({
+   trashPath,
+   restorePath,
+}: {
+   trashPath: string;
+   restorePath: string;
+}) => {
    const { toast } = useToast();
    const router = useRouter();
    const [open, setOpen] = useState(false);
 
-   useEffect(() => {
-      const isSelected = window.location.hash;
-      if (isSelected.replace('#dir-', '').replace('%20', ' ') === name) {
-         const selected = document.getElementById(isSelected.substring(1));
-         selected?.classList.add('highlight');
-         selected?.scrollIntoView({ behavior: 'smooth' });
-      }
-   }, []);
-
    const onDelete = async () => {
-      // toast({
-      //    title: 'Deleting a Folder',
-      // });
-      // const result = await deleteFolder(path);
-      // if (result?.success) {
-      //    toast({
-      //       title: result.success,
-      //       description: '1 folder was permanently deleted from Your Files.',
-      //    });
-      //    router.refresh();
-      // } else {
-      //    toast({
-      //       title: result?.error,
-      //       description: 'Something went wrong while deleting the folder',
-      //    });
-      // }
       setOpen(false);
+      const result = await deleteFolderFromTrash(trashPath);
+      if (result?.success) {
+         toast({
+            title: result.success,
+            description: '1 folder was permanently deleted from Trash.',
+         });
+         router.refresh();
+      } else if (result.error) {
+         toast({
+            title: 'Could not delete folder!',
+            description: result.error,
+         });
+      } else {
+         toast({
+            title: 'Network error',
+         });
+      }
    };
+
+   const onRestore = async () => {
+      setOpen(false);
+      const result = await restoreFolderFromTrash(trashPath, restorePath);
+      if (result?.success) {
+         toast({
+            title: result.success,
+            description: '1 folder was restored from Trash.',
+         });
+         router.refresh();
+      } else if (result.error) {
+         toast({
+            title: 'Could not restore folder!',
+            description: result.error,
+         });
+      } else {
+         toast({
+            title: 'Network error',
+         });
+      }
+   };
+
    return (
       <>
          <AlertDialog open={open}>
@@ -83,7 +105,7 @@ const TrashFolderCardAction = ({ name }: { name: string }) => {
                <MoreVertical className="h-5 w-5 cursor-pointer rounded-full text-muted-foreground transition-all hover:bg-gray-200 hover:text-primary active:text-muted-foreground dark:hover:bg-gray-700" />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40" align="start">
-               <DropdownMenuItem onClick={() => {}}>
+               <DropdownMenuItem onClick={onRestore}>
                   <ArchiveRestore className="mr-2 h-4 w-4" />
                   Restore
                </DropdownMenuItem>
@@ -100,15 +122,31 @@ const TrashFolderCardAction = ({ name }: { name: string }) => {
    );
 };
 
-type Props = { content: contentType };
+type Props = { content: any };
 
 const TrashFolderCard = ({ content }: Props) => {
-   const { name } = content;
+   const { name, modified, path, filePath: restorePath } = content;
+
+   const deletedFrom =
+      'File/' +
+      restorePath.substring(
+         restorePath.indexOf('drive/') + 5,
+         withoutTrailingSlash(restorePath).lastIndexOf('/'),
+      );
+
+   const hash = useHash();
+   useEffect(() => {
+      if (hash.replace('#dir-', '').replace('%20', ' ') === name) {
+         const selected = document.getElementById(hash.substring(1));
+         selected?.classList.add('highlight');
+         selected?.scrollIntoView({ behavior: 'smooth' });
+      }
+   }, [hash]);
 
    return (
       <Card id={'dir-' + name} className="h-full w-full cursor-pointer bg-secondary p-0">
-         <CardHeader className="w-full p-0">
-            <CardTitle className="flex w-full items-start justify-between p-5">
+         <CardHeader className="w-full p-5">
+            <CardTitle className="flex w-full items-start justify-between p-0">
                <Button
                   variant={'link'}
                   asChild
@@ -122,8 +160,12 @@ const TrashFolderCard = ({ content }: Props) => {
                      </span>
                   </div>
                </Button>
-               <TrashFolderCardAction name={name} />
+               <TrashFolderCardAction trashPath={path} restorePath={restorePath} />
             </CardTitle>
+            <div className="flex flex-col gap-0.5 text-xs text-muted-foreground">
+               <p>Deleted from: {deletedFrom.replaceAll('//', '/')}</p>
+               <p>Deleted: {modified}</p>
+            </div>
          </CardHeader>
       </Card>
    );

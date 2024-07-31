@@ -10,9 +10,12 @@ export const moveFileNoAuth = async (
    path: string,
    newPath: string,
    directObject?: boolean,
+   isFileNamePresent?: boolean,
 ): Promise<{ error?: string; success?: string }> => {
-   const fileName = getFileName(path);
-   newPath = newPath.endsWith(fileName) ? newPath : newPath + fileName;
+   if (!isFileNamePresent) {
+      const fileName = getFileName(path);
+      newPath = newPath.endsWith(fileName) ? newPath : newPath + fileName;
+   }
 
    if (path === newPath) return { success: 'The file was moved successfully!' };
 
@@ -44,8 +47,9 @@ export const moveFile = async (
 export const moveFolderNoAuth = async (
    path: string,
    newPath: string,
+   isFileNamePresent?: boolean,
 ): Promise<{ error?: string; success?: string }> => {
-   newPath += getFileName(withoutTrailingSlash(path)) + '/';
+   if (!isFileNamePresent) newPath += getFileName(withoutTrailingSlash(path)) + '/';
 
    if (newPath == path) return { success: 'The folder was moved successfully' };
 
