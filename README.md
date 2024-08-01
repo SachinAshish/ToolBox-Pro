@@ -75,8 +75,13 @@ sudo make restart
    -  Runtime: Nodejs
 
 -  **Databases**
+
    -  MongoDB
    -  AWS S3 for object storage
+
+### Mailing Service
+
+-  Render
 
 ### AI Services
 

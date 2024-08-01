@@ -14,7 +14,6 @@ services:
       - mongo2
       - mongo3
       - object_store
-      - service_mail
     volumes:
       - ./web/:/app
     env_file:
@@ -22,23 +21,6 @@ services:
     environment:
       - NODE_ENV=development
     command: bash -c "rm -rf .next && npm install && npm run dev"
-
-# -------------------------------------mail server------------------------------------------
-  service_mail:
-    build:
-      context: ./mail/
-      args:
-        - NODE_ENV=development
-    container_name: service_mail
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./mail/:/app
-    env_file:
-      - ./mail/.env
-    environment:
-      - NODE_ENV=development
-    command: bash -c "npm install && npm run dev"
 
 # ------------------------------------load_balancer-----------------------------------------
   load_balancer:
