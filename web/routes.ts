@@ -30,3 +30,5 @@ export const DEFAULT_LOGIN_REDIRECT: string = '/dashboard';
 
 export const FILES_URL: string = '/dashboard/files';
 export const TRASH_URL: string = '/dashboard/trash';
+export const STARRED_URL: string = '/dashboard/starred';
+export const SETTINGS_URL: string = '/dashboard/settings';

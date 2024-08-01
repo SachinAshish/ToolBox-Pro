@@ -7,7 +7,6 @@ This file provides information about all the docker container present inside thi
 -  [Mongo](#mongo): To Provide Mongo database for development.
 -  [Mongo_panel](#mongo_panel): To provide a web ui for managing mongodb.
 -  [Localstack S3](#localstack-s3): To provide object storage.
--  [Sevice_Mail](#sevice_mail): For sending emails for verifcation and other things
 -  [Pdf-API](#pdf-api): To provide an API for pdf manipulation
 
 The details of all the containers and how to access them are given below:

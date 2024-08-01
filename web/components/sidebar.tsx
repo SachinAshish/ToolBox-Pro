@@ -46,7 +46,7 @@ const SideBar = ({ navs }: Props) => {
             <div
                className={cn(
                   open ? 'w-56' : 'w-16',
-                  'duration-400 fixed bottom-0 left-0 h-[calc(100vh-80px)] overflow-hidden border-r bg-background transition-all',
+                  'duration-400 fixed bottom-0 left-0 h-[calc(100vh-70px)] overflow-hidden border-r bg-background transition-all',
                )}
             >
                <div className="flex h-full flex-col items-end p-2 px-3">

@@ -11,7 +11,7 @@ const ProtectedPageLayout = ({ children }: Props) => {
       <TooltipProvider>
          <div className="flex xl:gap-6">
             <DashboardSideBar />
-            {children}
+            <div className="container mx-auto w-full py-12">{children}</div>
          </div>
          <Toaster />
       </TooltipProvider>

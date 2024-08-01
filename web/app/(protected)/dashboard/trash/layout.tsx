@@ -3,7 +3,7 @@ import { Separator } from '@/components/ui/separator';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
    return (
-      <main className="container mx-auto w-full py-12">
+      <main>
          <div className="mb-4 flex items-center justify-between">
             <h1 className="text-4xl font-bold">Trash</h1>
             <Button>Empty Trash</Button>

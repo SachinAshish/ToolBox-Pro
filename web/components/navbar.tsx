@@ -12,7 +12,7 @@ const Navbar = async (props: Props) => {
    const user = await currentUser();
    return (
       <>
-         <div className="fixed left-0 top-0 z-50 flex h-[80px] w-full items-center border-b bg-background px-8">
+         <div className="fixed left-0 top-0 z-50 flex h-[70px] w-full items-center border-b bg-background px-8">
             <div className="flex w-full items-center justify-between">
                <span>
                   <Link href="/" className="hover:underline">
