@@ -13,7 +13,7 @@ import {
    Waypoints,
 } from 'lucide-react';
 import SideBar from './sidebar';
-import { FILES_URL, STARRED_URL, TRASH_URL } from '@/routes';
+import { FILES_URL, STARRED_URL, TOOLS_URL, TRASH_URL } from '@/routes';
 import { useRouter } from 'next/navigation';
 
 type Props = {};
@@ -57,7 +57,7 @@ const DashboardSideBar = (props: Props) => {
       {
          icon: <PocketKnife className={iconClassName} />,
          title: 'Common Tools',
-         onClick: () => {},
+         onClick: () => router.push(TOOLS_URL),
       },
       {
          icon: <Bot className={iconClassName} />,

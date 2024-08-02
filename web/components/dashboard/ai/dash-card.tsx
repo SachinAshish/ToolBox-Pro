@@ -1,12 +1,15 @@
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 import { Bot } from 'lucide-react';
 import React from 'react';
 
-type Props = {};
+type Props = {
+   className?: string;
+};
 
-const DashboardAiCard = (props: Props) => {
+const DashboardAiCard = ({ className }: Props) => {
    return (
-      <div className="rounded-lg border p-4">
+      <div className={cn(className, 'rounded-lg border p-4')}>
          <div className="mb-2 flex items-center justify-between">
             <h3 className="flex items-center gap-2 text-xl font-semibold">
                <Bot /> AI tools
