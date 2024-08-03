@@ -31,6 +31,8 @@ import {
    Download,
    Eye,
 } from 'lucide-react';
+import { GoStarFill } from 'react-icons/go';
+import { GoStar } from 'react-icons/go';
 import { useEffect, useState } from 'react';
 import { deleteFile } from '@/data/files/delete';
 import { useToast } from '../ui/use-toast';
@@ -47,8 +49,9 @@ import RenameFileForm from './rename-file-form';
 import MoveFileForm from './move-file-form';
 import { moveFileToTrash } from '@/data/files/trash';
 import { useHash } from '@/hooks/use-hash';
+import { addFileToStar, removeFileFromStar } from '@/data/files/star';
 
-const FileCardAction = ({ filePath }: { filePath: string }) => {
+const FileCardAction = ({ filePath, starred }: { filePath: string; starred: boolean }) => {
    const router = useRouter();
    const { toast } = useToast();
    const [deleteOpen, setDeleteOpen] = useState(false);
@@ -58,49 +61,46 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
    const fileName = getFileName(filePath);
 
    const onMoveToTrash = async () => {
-      {
-         const result = await moveFileToTrash(filePath);
-         if (result.success) {
-            toast({
-               title: result.success,
-               description: '1 file was moved to Trash.',
-            });
-            router.refresh();
-         } else if (result.error) {
-            toast({
-               title: 'Could not move the file to trash!',
-               description: result.error,
-            });
-         } else {
-            toast({
-               title: 'Network error',
-            });
-         }
+      const result = await moveFileToTrash(filePath);
+      if (result.success) {
+         toast({
+            title: result.success,
+            description: '1 file was moved to Trash.',
+         });
+         router.refresh();
+      } else if (result.error) {
+         toast({
+            title: 'Could not move the file to trash!',
+            description: result.error,
+         });
+      } else {
+         toast({
+            title: 'Network error',
+         });
       }
    };
+
    const onDelete = async () => {
-      {
-         setDeleteOpen(false);
+      setDeleteOpen(false);
+      toast({
+         title: 'Deleting a file',
+      });
+      const result = await deleteFile(filePath);
+      if (result.success) {
          toast({
-            title: 'Deleting a file',
+            title: result.success,
+            description: '1 file was permanently deleted from Your Files.',
          });
-         const result = await deleteFile(filePath);
-         if (result.success) {
-            toast({
-               title: result.success,
-               description: '1 file was permanently deleted from Your Files.',
-            });
-            router.refresh();
-         } else if (result.error) {
-            toast({
-               title: 'Could not delete file!',
-               description: result.error,
-            });
-         } else {
-            toast({
-               title: 'Network error',
-            });
-         }
+         router.refresh();
+      } else if (result.error) {
+         toast({
+            title: 'Could not delete file!',
+            description: result.error,
+         });
+      } else {
+         toast({
+            title: 'Network error',
+         });
       }
    };
 
@@ -126,6 +126,46 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
          const fileUrl = url?.replace('object_store', host);
 
          window.open(fileUrl, '_blank');
+      }
+   };
+
+   const onStar = async () => {
+      if (!starred) {
+         const result = await addFileToStar(filePath);
+         if (result.success) {
+            toast({
+               title: 'Starred',
+               description: result.success,
+            });
+            router.refresh();
+         } else if (result.error) {
+            toast({
+               title: 'Could not star file!',
+               description: result.error,
+            });
+         } else {
+            toast({
+               title: 'Network error',
+            });
+         }
+      } else {
+         const result = await removeFileFromStar(filePath);
+         if (result.success) {
+            toast({
+               title: 'Remove from Starred',
+               description: result.success,
+            });
+            router.refresh();
+         } else if (result.error) {
+            toast({
+               title: 'Could not remove the file from starred list!',
+               description: result.error,
+            });
+         } else {
+            toast({
+               title: 'Network error',
+            });
+         }
       }
    };
 
@@ -172,7 +212,7 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
             <DropdownMenuTrigger className="z-10 -mr-2 focus:outline-none">
                <MoreVertical className="h-5 w-5 cursor-pointer rounded-full text-muted-foreground transition-all hover:bg-gray-200 hover:text-primary active:text-muted-foreground dark:hover:bg-gray-700" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-40" align="start">
+            <DropdownMenuContent className="w-48" align="start">
                <DropdownMenuItem onClick={() => {}}>
                   <Eye className="mr-2 h-4 w-4" />
                   Preview
@@ -198,6 +238,14 @@ const FileCardAction = ({ filePath }: { filePath: string }) => {
                   Make a Copy
                </DropdownMenuItem>
                <DropdownMenuSeparator />
+               <DropdownMenuItem onClick={onStar}>
+                  {starred ? (
+                     <GoStarFill className="mr-2 h-4 w-4" />
+                  ) : (
+                     <GoStar className="mr-2 h-4 w-4" />
+                  )}
+                  {starred ? 'Remove from' : 'Add to'} Star
+               </DropdownMenuItem>
                <DropdownMenuItem
                   className="text-destructive dark:text-red-500"
                   onClick={() => setDeleteOpen(true)}
@@ -282,7 +330,7 @@ const FileCard = ({ content }: Props) => {
                      </span>
                   </div>
                </Button>
-               <FileCardAction filePath={path} />
+               <FileCardAction filePath={path} starred={!!content.starred} />
             </CardTitle>
             <div className="flex flex-col gap-0.5 text-xs text-muted-foreground">
                <p>Last Modified: {modified}</p>

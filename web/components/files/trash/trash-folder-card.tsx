@@ -104,7 +104,7 @@ const TrashFolderCardAction = ({
             <DropdownMenuTrigger className="-mr-2 focus:outline-none">
                <MoreVertical className="h-5 w-5 cursor-pointer rounded-full text-muted-foreground transition-all hover:bg-gray-200 hover:text-primary active:text-muted-foreground dark:hover:bg-gray-700" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-40" align="start">
+            <DropdownMenuContent className="w-48" align="start">
                <DropdownMenuItem onClick={onRestore}>
                   <ArchiveRestore className="mr-2 h-4 w-4" />
                   Restore

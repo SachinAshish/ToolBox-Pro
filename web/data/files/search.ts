@@ -1,7 +1,8 @@
 'use server';
 
 import { verifyCurrentUser } from '@/lib/auth/verify';
-import { listContentNoAuth, listTrashContent } from './list';
+import { listContentNoAuth } from './list';
+import { listTrashContent } from './trash';
 import { User } from '@prisma/client';
 
 export const searchObjects = async (key: string) => {
@@ -57,12 +58,12 @@ export const searchTrashObjects = async (key: string) => {
 
       let searchResults = [];
       if (key.includes('/'))
-         searchResults = (contents).filter(({ path }) => {
+         searchResults = contents.filter(({ path }) => {
             if (path.toLowerCase().includes(key.toLowerCase())) return true;
             return false;
          });
       else
-         searchResults = (contents).filter(({ name }) => {
+         searchResults = contents.filter(({ name }) => {
             if (name.toLowerCase().includes(key.toLowerCase())) return true;
             return false;
          });

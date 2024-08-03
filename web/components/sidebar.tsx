@@ -70,7 +70,7 @@ const SideBar = ({ navs }: Props) => {
                         </TooltipContent>
                      )}
                   </Tooltip>
-                  <div className="flex h-full w-full flex-col items-start justify-center gap-2 pb-32">
+                  <div className="flex h-full w-full flex-col items-start justify-center gap-2">
                      {navs.map((nav: sidebarButtonType) => (
                         <SideBarBtn {...nav} key={nav.title} />
                      ))}

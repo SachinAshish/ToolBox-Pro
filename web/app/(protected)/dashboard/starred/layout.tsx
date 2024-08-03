@@ -10,7 +10,6 @@ const StarredLayout = ({ children }: Props) => {
       <main>
          <div className="mb-4 flex items-center justify-between">
             <h1 className="text-4xl font-bold">Starred</h1>
-            <Button>Empty Trash</Button>
          </div>
 
          <div className="mb-4 flex w-full items-center justify-between rounded-lg bg-secondary p-3 px-4 text-sm text-muted-foreground">

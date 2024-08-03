@@ -2,12 +2,10 @@
 
 import { User } from '@prisma/client';
 import { verifyCurrentUser } from '@/lib/auth/verify';
-import { getFileExtension, getFileName, getFilePath, withoutTrailingSlash } from '@/lib/utils';
+import { getFileExtension, getFileName, withoutTrailingSlash } from '@/lib/utils';
 import { copyFolderNoAuth, copyObjectNoAuth } from './copy';
 import { deleteFileNoAuth, deleteFolderNoAuth } from './delete';
-import { slashReplace, trashDetailsSeparator } from '@/constants';
 import { listContentNoAuth } from './list';
-import { parseTrashName } from '@/lib/files/parse-name';
 import { moveFileNoAuth, moveFolderNoAuth } from './move';
 import db from '@/lib/db';
 
@@ -83,7 +81,6 @@ export const moveFileToTrash = async (path: string) => {
             userId: user.id,
             originalPath: path,
             trashPath: newPath,
-            type: 'FILE',
          },
       });
 
@@ -126,7 +123,6 @@ export const moveFolderToTrash = async (path: string) => {
             userId: user.id,
             originalPath: path,
             trashPath: newPath,
-            type: 'DIRECTORY',
          },
       });
 
@@ -244,4 +240,39 @@ export const restoreFolderFromTrash = async (
    });
 
    return res;
+};
+
+export const emptyTrash = async (): Promise<{ error?: string; success?: string }> => {
+   let user: User;
+   const verification = await verifyCurrentUser();
+   if (!verification.success) return { error: verification.error };
+   else if (verification.data) user = verification.data;
+   else
+      return {
+         error: 'Something unexpected happened! Please report it <a href="https://github.com/ArjunVarshney/ToolBox-Pro/issues">here</a>',
+      };
+
+   const trashData = await listTrashContent();
+
+   if (!trashData.data) return { error: 'No file found in the trash!' };
+
+   let res,
+      f = 0;
+   for (const content of trashData.data) {
+      if (content.type === 'directory') {
+         res = await deleteFolderNoAuth(content.path);
+      } else {
+         res = await deleteFileNoAuth(content.path);
+      }
+      if (res.error) f = 1;
+   }
+
+   await db.trashFileAndFolder.deleteMany({
+      where: {
+         userId: user.id,
+      },
+   });
+
+   if (f === 1) return { error: 'Some file may not be deleted from trash' };
+   return { success: 'All files were permanently deleted from trash' };
 };

@@ -68,6 +68,7 @@ model User {
   role                  UserRole               @default(USER)
   accounts              Account[]
   trash                 TrashFileAndFolder[]
+  star                  StarFileAndFolder[]
   isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
 }
@@ -86,4 +87,13 @@ model TrashFileAndFolder {
   originalPath String
   trashPath    String
   user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model StarFileAndFolder {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+  path   String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, path])
 }

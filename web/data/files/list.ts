@@ -9,6 +9,7 @@ import { contentType } from '@/types';
 import { getDateString } from '@/lib/files/get-date';
 import { getFileSize } from '@/lib/files/get-size';
 import { withTrailingSlash } from '@/lib/utils';
+import db from '@/lib/db';
 
 export const listFilesNoAuth = async (path: string) => {
    const command = new ListObjectsV2Command({
@@ -82,7 +83,7 @@ export const listFolders = async (path: string) => {
 };
 
 export const listContentNoAuth = async (path: string) => {
-   path = withTrailingSlash(path);
+   path = path ? withTrailingSlash(path) : '';
    const command = new ListObjectsV2Command({
       Bucket: 'data',
       Prefix: path,
@@ -95,7 +96,9 @@ export const listContentNoAuth = async (path: string) => {
          modified: content.LastModified || new Date(),
          size: (content.Size || 0) / 1000,
       })) || [];
+
    const content_details: contentType[] = [];
+
    for (const { key: contentPath, modified, size } of contents) {
       if (contentPath === path + '/') continue;
       const isFolder = contentPath.endsWith('/');
@@ -134,6 +137,13 @@ export const listContent = async (path: string, depth?: number) => {
 
    try {
       let contents = await listContentNoAuth(folderPath);
+
+      const starred = await db.starFileAndFolder.findMany({
+         where: {
+            userId: user.id,
+         },
+      });
+
       if (depth)
          contents = contents.filter((content) => {
             let { path } = content;
@@ -147,9 +157,18 @@ export const listContent = async (path: string, depth?: number) => {
             if (pathArr.length === folderPathArr.length + depth - 1) return true;
             return false;
          });
+
+      const processedContents = [];
+
+      for (const content of contents) {
+         const isStarred = starred.find(({ path }) => path === content.path);
+         content['starred'] = !!isStarred;
+         processedContents.push(content);
+      }
+
       return {
          success: 'No error ocurred during reading',
-         data: contents || [],
+         data: processedContents || [],
       };
    } catch (err) {
       console.error('Error listing files', err);

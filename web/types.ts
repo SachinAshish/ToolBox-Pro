@@ -6,6 +6,7 @@ export type contentType = {
    path: string;
    modified: string;
    size: string;
+   starred?: boolean;
 };
 
 export type sidebarButtonType = {

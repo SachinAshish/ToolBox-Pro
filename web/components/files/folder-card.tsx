@@ -29,6 +29,7 @@ import {
    FilePen,
    FolderArchive,
    FolderOpen,
+   Star,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { deleteFolder } from '@/data/files/delete';
@@ -45,8 +46,18 @@ import RenameFolderForm from './rename-folder-form';
 import MoveFolderForm from './move-folder-form';
 import { moveFolderToTrash } from '@/data/files/trash';
 import { useHash } from '@/hooks/use-hash';
+import { addFolderToStar, removeFolderFromStar } from '@/data/files/star';
+import { GoStar, GoStarFill } from 'react-icons/go';
 
-const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }) => {
+const FolderCardAction = ({
+   path,
+   openLink,
+   starred,
+}: {
+   path: string;
+   openLink: string;
+   starred: boolean;
+}) => {
    const { toast } = useToast();
    const router = useRouter();
    const [open, setOpen] = useState(false);
@@ -125,6 +136,46 @@ const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }
       }
    };
 
+   const onStar = async () => {
+      if (!starred) {
+         const result = await addFolderToStar(path);
+         if (result.success) {
+            toast({
+               title: 'Starred',
+               description: result.success,
+            });
+            router.refresh();
+         } else if (result.error) {
+            toast({
+               title: 'Could not star folder!',
+               description: result.error,
+            });
+         } else {
+            toast({
+               title: 'Network error',
+            });
+         }
+      } else {
+         const result = await removeFolderFromStar(path);
+         if (result.success) {
+            toast({
+               title: 'Removed from Starred',
+               description: result.success,
+            });
+            router.refresh();
+         } else if (result.error) {
+            toast({
+               title: 'Could not remove the folder from starred list!',
+               description: result.error,
+            });
+         } else {
+            toast({
+               title: 'Network error',
+            });
+         }
+      }
+   };
+
    return (
       <>
          <AlertDialog open={open}>
@@ -169,7 +220,7 @@ const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }
             <DropdownMenuTrigger className="-mr-2 focus:outline-none">
                <MoreVertical className="h-5 w-5 cursor-pointer rounded-full text-muted-foreground transition-all hover:bg-gray-200 hover:text-primary active:text-muted-foreground dark:hover:bg-gray-700" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-40" align="start">
+            <DropdownMenuContent className="w-48" align="start">
                <Link href={openLink}>
                   <DropdownMenuItem>
                      <FolderOpen className="mr-2 h-4 w-4" />
@@ -193,6 +244,14 @@ const FolderCardAction = ({ path, openLink }: { path: string; openLink: string }
                   Make a Copy
                </DropdownMenuItem>
                <DropdownMenuSeparator />
+               <DropdownMenuItem onClick={onStar}>
+                  {starred ? (
+                     <GoStarFill className="mr-2 h-4 w-4" />
+                  ) : (
+                     <GoStar className="mr-2 h-4 w-4" />
+                  )}
+                  {starred ? 'Remove from' : 'Add to'} Star
+               </DropdownMenuItem>
                <DropdownMenuItem
                   className="text-destructive dark:text-red-500"
                   onClick={() => setOpen(true)}
@@ -248,7 +307,11 @@ const FolderCard = ({ content }: Props) => {
                      </span>
                   </div>
                </Button>
-               <FolderCardAction path={path} openLink={pathname + '/' + name} />
+               <FolderCardAction
+                  path={path}
+                  openLink={pathname + '/' + name}
+                  starred={!!content.starred}
+               />
             </CardTitle>
          </CardHeader>
       </Card>
